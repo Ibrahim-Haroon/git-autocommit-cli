@@ -113,8 +113,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.BYPASS_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./build/libs/autocommit.jar
-          asset_name: autocommit.jar
+          asset_path: ./build/libs/git-auto-commit-cli-${{ steps.bump_version.outputs.new_version }}-all.jar
+          asset_name: git-auto-commit-cli-${{ steps.bump_version.outputs.new_version }}-all.jar
           asset_content_type: application/java-archive
 
       - name: Update Major Version Tag
