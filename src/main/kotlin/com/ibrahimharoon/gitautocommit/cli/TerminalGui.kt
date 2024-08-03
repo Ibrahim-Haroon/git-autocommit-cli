@@ -91,6 +91,8 @@ class TerminalGui(
 
     private fun handleRegen() {
         terminal.println("Regenerating commit message...")
+        terminal.println("Cache: $conversationCache")
+
         val additionalLlmPrompt = StringPrompt(
             prompt = TextColors.cyan("Pass additional prompt to LLM (optional)"),
             terminal = terminal,
