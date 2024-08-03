@@ -3,7 +3,7 @@ package com.ibrahimharoon.gitautocommit.services
 internal class LlmConstants {
     companion object {
         private const val GIT_COMMIT_CONVENTION =
-        """
+            """
         docs: Documentation only changes,
         style: Changes that do not affect the meaning of the code (white-space, formatting, linting, etc)
         refactor: A code change that neither fixes a bug nor adds a feature
@@ -18,7 +18,7 @@ internal class LlmConstants {
         """
 
         const val ROLE =
-        """
+            """
         You are a Git Commit and PR Summary Assistant. Your primary task is to generate clear, concise, and
         informative commit messages and PR summaries based on git diffs and git logs. Your outputs should help
         developers understand the changes made without being overly verbose or too brief. Follow best practices
@@ -26,7 +26,7 @@ internal class LlmConstants {
         """
 
         const val COMMIT_PROMPT =
-        """
+            """
         You are provided with a git diff representing the changes made in the code. This will be pasted directly into
         the commit message, so don't add weird characters. Use direct names for variables, functions, classes, etc.
         1. For minor changes like linting or small logic updates, generate a concise message under 50 characters.
@@ -39,7 +39,7 @@ internal class LlmConstants {
         """
 
         const val PR_SUMMARY_PROMPT =
-        """
+            """
             You are provided with a git log of commits for just the current branch. Generate a PR summary that 
             follows best practices, providing a clear and comprehensive overview of the changes introduced. This 
             will be pasted directly into git, so don't add weird characters. Use direct names for variables, 

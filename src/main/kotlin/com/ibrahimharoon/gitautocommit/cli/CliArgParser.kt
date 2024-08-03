@@ -90,7 +90,6 @@ object CliArgParser {
             description = "Test CLI tool was installed correctly"
         ).default(false)
 
-
         parser.parse(args)
         return CliArguments(
             setDefault,

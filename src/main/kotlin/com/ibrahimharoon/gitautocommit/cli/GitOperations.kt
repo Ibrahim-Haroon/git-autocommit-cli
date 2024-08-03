@@ -1,14 +1,14 @@
 package com.ibrahimharoon.gitautocommit.cli
 
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
-import com.ibrahimharoon.gitautocommit.services.GitService
-import com.ibrahimharoon.gitautocommit.services.LocalLlmResponse
-import com.ibrahimharoon.gitautocommit.services.OpenaiLlmResponse
 import com.github.ajalt.mordant.rendering.TextColors
 import com.github.ajalt.mordant.rendering.TextStyles
 import com.github.ajalt.mordant.terminal.Terminal
+import com.ibrahimharoon.gitautocommit.services.GitService
 import com.ibrahimharoon.gitautocommit.services.GoogleVertexLlmResponse
+import com.ibrahimharoon.gitautocommit.services.LocalLlmResponse
+import com.ibrahimharoon.gitautocommit.services.OpenaiLlmResponse
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 object GitOperations {
     private val logger: Logger = LoggerFactory.getLogger("GitOperations")

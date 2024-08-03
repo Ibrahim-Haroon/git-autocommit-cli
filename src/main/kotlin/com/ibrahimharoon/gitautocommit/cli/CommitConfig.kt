@@ -7,4 +7,3 @@ data class CommitConfig(
     val isPr: Boolean,
     val isPlainPr: Boolean
 )
-

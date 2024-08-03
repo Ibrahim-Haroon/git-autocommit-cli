@@ -4,7 +4,7 @@ import io.github.cdimascio.dotenv.Dotenv
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpHeaders
 
-object OpenaiLlmResponse: LlmResponseService {
+object OpenaiLlmResponse : LlmResponseService {
     private const val MODEL = "gpt-3.5-turbo"
     private const val URL = "https://api.openai.com/v1/chat/completions"
     private val dotenv = Dotenv.configure()
@@ -15,7 +15,7 @@ object OpenaiLlmResponse: LlmResponseService {
     private val logger = LoggerFactory.getLogger(OpenaiLlmResponse::class.java)
     private val headers = HttpHeaders().apply {
         set("Content-Type", "application/json")
-        set ("Authorization", "Bearer $openaiApiKey")
+        set("Authorization", "Bearer $openaiApiKey")
     }
     private val baseLlmResponse = DefaultLlmResponseService(
         MODEL,

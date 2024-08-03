@@ -7,7 +7,6 @@ import com.ibrahimharoon.gitautocommit.services.LlmConstants.Companion.ROLE
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
-import org.springframework.http.ResponseEntity
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.exchange
 
@@ -20,7 +19,7 @@ class DefaultLlmResponseService(
     override fun getMessage(gitData: String, isPr: Boolean, additionalLlmPrompt: String): String {
         var prompt = ""
         if (additionalLlmPrompt.isNotEmpty()) {
-           prompt = "Your previous commit message was no good. This is an additional prompt to help you out: $additionalLlmPrompt\n\n"
+            prompt = "Your previous commit message was no good. This is an additional prompt to help you out: $additionalLlmPrompt\n\n"
         }
         prompt += if (isPr) PR_SUMMARY_PROMPT else COMMIT_PROMPT
 
@@ -49,7 +48,6 @@ class DefaultLlmResponseService(
         return response.body?.choices?.firstOrNull()?.message?.content
             ?: throw IllegalStateException("No content found in the response")
     }
-
 
     companion object {
         private val restTemplate = RestTemplate()
