@@ -179,9 +179,3 @@ We welcome contributions to this project! Here's how you can help:
 > Please ensure your code adheres to our style guide.
 
 ---
-
-<div align="center">
-
-Made with ❤️ by [Ibrahim Haroon](https://github.com/Ibrahim-Haroon)
-
-</div>
