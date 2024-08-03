@@ -122,13 +122,21 @@ jobs:
           asset_name: git-auto-commit-cli-${{ steps.bump_version.outputs.new_version }}-all.jar
           asset_content_type: application/java-archive
 
-      - name: Update Major Version Tag
+      - name: Update Tags
         run: |
           git fetch --all --tags
+          
+          # Update or create v1 tag
           git tag -fa v1 -m "Update v1 tag to latest release"
           git push origin v1 --force
-
-      - name: Update Version Tag
-        run: |
-          git tag -a v${{ steps.bump_version.outputs.new_version }} -m "Release ${{ steps.get_current_version.outputs.version }}"
-          git push origin v${{ steps.bump_version.outputs.new_version }}
+          
+          # Check if the version-specific tag already exists
+          if git rev-parse "v${{ steps.bump_version.outputs.new_version }}" >/dev/null 2>&1; then
+            echo "Tag v${{ steps.bump_version.outputs.new_version }} already exists. Updating..."
+            git tag -fa "v${{ steps.bump_version.outputs.new_version }}" -m "Release ${{ steps.bump_version.outputs.new_version }}"
+            git push origin "v${{ steps.bump_version.outputs.new_version }}" --force
+          else
+            echo "Creating new tag v${{ steps.bump_version.outputs.new_version }}..."
+            git tag -a "v${{ steps.bump_version.outputs.new_version }}" -m "Release ${{ steps.bump_version.outputs.new_version }}"
+            git push origin "v${{ steps.bump_version.outputs.new_version }}"
+          fi
