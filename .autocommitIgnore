@@ -1,3 +1,0 @@
-# Use this files to remove files from being added into commit messages which are NOT alrrady in .gitignore
-# Example:
-# src/main/kotlin/com/ukg/gitautocommit/services/LlmResponseService.kt
