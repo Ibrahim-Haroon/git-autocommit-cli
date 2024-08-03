@@ -65,8 +65,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.set_version.outputs.version }}
-          release_name: Release ${{ steps.set_version.outputs.version }}
+          tag_name: ${{ steps.set_version.outputs.new_version }}
+          release_name: Release ${{ steps.set_version.outputs.new_version }}
           draft: false
           prerelease: false
 
@@ -82,7 +82,7 @@ jobs:
 
       - name: Update Major Version Tag
         run: |
-          git tag -fa v1 -m "Update v1 tag to latest release" ${{ steps.set_version.outputs.version }}
+          git tag -fa v1 -m "Update v1 tag to latest release" ${{ steps.set_version.outputs.new_version }}
           git push origin v1 --force
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -90,13 +90,13 @@ jobs:
   set_version:
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.get_version.outputs.new_version }}
+      version: ${{ steps.bump_version.outputs.new_version }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Get Current Version
-        id: get_version
+        id: get_current_version
         run: |
           echo "version=$(grep 'version =' build.gradle.kts | sed 's/[^0-9.]*//g')" >> $GITHUB_ENV
 
@@ -123,5 +123,5 @@ jobs:
           git push origin main
 
       - name: Output Version
-        id: get_version
+        id: output_version
         run: echo "new_version=${{ github.event.inputs.version }}" >> $GITHUB_ENV
