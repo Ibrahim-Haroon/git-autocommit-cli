@@ -2,7 +2,7 @@ name: CI Pipeline
 
 on:
   push:
-    branches:
+    branches-ignore:
       - main
   workflow_dispatch:
     inputs:
@@ -45,7 +45,7 @@ jobs:
   set_version_and_release:
     needs: build
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    # if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     env:
       GITHUB_TOKEN: ${{ secrets.BYPASS_TOKEN }}
 
@@ -102,6 +102,10 @@ jobs:
           release_name: Release ${{ steps.bump_version.outputs.new_version }}
           draft: false
           prerelease: false
+
+      - name: print dir
+        run: |
+          ls -la
 
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
