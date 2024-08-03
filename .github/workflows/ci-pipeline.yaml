@@ -130,5 +130,5 @@ jobs:
 
       - name: Update Version Tag
         run: |
-          git tag -a v${{ steps.get_current_version.outputs.version }} -m "Release ${{ steps.bump_version.outputs.new_version }}"
+          git tag -a v${{ steps.bump_version.outputs.new_version }} -m "Release ${{ steps.get_current_version.outputs.version }}"
           git push origin v${{ steps.bump_version.outputs.new_version }}
