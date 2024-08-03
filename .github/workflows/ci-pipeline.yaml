@@ -20,7 +20,7 @@ jobs:
       - name: Install GitVersion
         id: install_gitversion
         run: |
-          dotnet tool install GitVersion.Tool --tool-path ./.gitversion --version 5.x
+          dotnet tool install GitVersion.Tool --tool-path ./.gitversion --version 5.12.0
 
       - name: Determine version
         id: gitversion
