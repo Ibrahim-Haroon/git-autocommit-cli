@@ -1,0 +1,14 @@
+services:
+  llama-cpp-server:
+    image: llama-cpp-server:latest
+    container_name: llama-cpp-server
+    build:
+      context: .
+      dockerfile: Dockerfile.llama-cpp
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/health/" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    ports:
+      - "8080:8080"
