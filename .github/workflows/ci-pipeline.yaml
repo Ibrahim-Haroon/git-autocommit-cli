@@ -103,13 +103,13 @@ jobs:
       - name: Get Current Version
         id: get_current_version
         run: |
-          version=$(grep 'version =' build.gradle.kts | sed 's/[^0-9.]*//g')
+          version=$(grep '^version =' build.gradle.kts | sed 's/[^0-9.]*//g')
           echo "version=$version" >> $GITHUB_ENV
 
       - name: Bump Version
         id: bump_version
         run: |
-          current_version=${{ env.version }}
+          current_version="${{ env.version }}"
           if [ "${{ github.event_name }}" == "workflow_dispatch" ] && [ -n "${{ github.event.inputs.version }}" ]; then
             new_version="${{ github.event.inputs.version }}"
           else
@@ -122,7 +122,7 @@ jobs:
 
       - name: Set New Version in Gradle
         run: |
-          sed -i "s/version = \"$version\"/version = \"$new_version\"/" build.gradle.kts
+          sed -i "s/version = \"$current_version\"/version = \"$new_version\"/" build.gradle.kts
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
           git add build.gradle.kts
