@@ -31,7 +31,7 @@ AutoCommit is a powerful CLI tool that leverages AI to generate meaningful commi
 
 1. Clone the repository
    ```shell
-   git clone https://github.com/Ibrahim-Haroon/git-autocommit-cli.git
+   git clone -b install_branch https://github.com/Ibrahim-Haroon/git-autocommit-cli.git
    ```
 
 2. Run the install script
