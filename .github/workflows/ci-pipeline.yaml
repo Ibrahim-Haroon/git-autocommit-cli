@@ -47,8 +47,7 @@ jobs:
     runs-on: ubuntu-latest
     if: |
       github.event_name == 'push' &&
-      github.ref == 'refs/heads/main' &&
-      github.event.head_commit.author.name != 'GitHub Actions Bot'
+      github.ref == 'refs/heads/main'
     env:
       GITHUB_TOKEN: ${{ secrets.BYPASS_TOKEN }}
 
