@@ -4,7 +4,12 @@ on:
   pull_request:
     branches:
       - main
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release'
+        required: false
+        default: ''
 concurrency:
   group: 'git-autocommit-cli-${{ github.ref }}'
   cancel-in-progress: true
@@ -98,15 +103,17 @@ jobs:
       - name: Get Current Version
         id: get_current_version
         run: |
-          echo "version=$(grep 'version =' build.gradle.kts | sed 's/[^0-9.]*//g')" >> $GITHUB_ENV
+          version=$(grep 'version =' build.gradle.kts | sed 's/[^0-9.]*//g')
+          echo "version=$version" >> $GITHUB_ENV
 
       - name: Bump Version
         id: bump_version
         run: |
-          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+          current_version=${{ env.version }}
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ] && [ -n "${{ github.event.inputs.version }}" ]; then
             new_version="${{ github.event.inputs.version }}"
           else
-            IFS='.' read -r major minor patch <<<"$version"
+            IFS='.' read -r major minor patch <<<"$current_version"
             new_patch=$((patch + 1))
             new_version="$major.$minor.$new_patch"
           fi
@@ -121,7 +128,3 @@ jobs:
           git add build.gradle.kts
           git commit -m "Bump version to $new_version"
           git push origin main
-
-      - name: Output Version
-        id: output_version
-        run: echo "new_version=${{ github.event.inputs.version }}" >> $GITHUB_ENV
