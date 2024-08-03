@@ -50,6 +50,11 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.BYPASS_TOKEN }}
 
     steps:
+      - name: Configure Git
+        run: |
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
       - name: Checkout code
         uses: actions/checkout@v3
         with:
@@ -103,17 +108,35 @@ jobs:
           draft: false
           prerelease: false
 
+      - name: print dir
+        run: |
+          ls build/libs
+
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.BYPASS_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./build/libs/autocommit.jar
-          asset_name: autocommit.jar
+          asset_path: ./build/libs/git-auto-commit-cli-${{ steps.get_current_version.outputs.version }}-all.jar
+          asset_name: git-auto-commit-cli-${{ steps.bump_version.outputs.new_version }}-all.jar
           asset_content_type: application/java-archive
 
-      - name: Update Major Version Tag
+      - name: Update Tags
         run: |
-          git tag -fa v1 -m "Update v1 tag to latest release" v${{ steps.bump_version.outputs.new_version }}
+          git fetch --all --tags
+          
+          # Update or create v1 tag
+          git tag -fa v1 -m "Update v1 tag to latest release"
           git push origin v1 --force
+          
+          # Check if the version-specific tag already exists
+          if git rev-parse "v${{ steps.bump_version.outputs.new_version }}" >/dev/null 2>&1; then
+            echo "Tag v${{ steps.bump_version.outputs.new_version }} already exists. Updating..."
+            git tag -fa "v${{ steps.bump_version.outputs.new_version }}" -m "Release ${{ steps.bump_version.outputs.new_version }}"
+            git push origin "v${{ steps.bump_version.outputs.new_version }}" --force
+          else
+            echo "Creating new tag v${{ steps.bump_version.outputs.new_version }}..."
+            git tag -a "v${{ steps.bump_version.outputs.new_version }}" -m "Release ${{ steps.bump_version.outputs.new_version }}"
+            git push origin "v${{ steps.bump_version.outputs.new_version }}"
+          fi
