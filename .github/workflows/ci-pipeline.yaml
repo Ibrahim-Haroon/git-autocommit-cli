@@ -22,6 +22,10 @@ jobs:
         with:
           versionSpec: '5.x'
 
+      - name: print dir
+        run: |
+          ls -la
+
       - name: Determine version
         id: gitversion
         run: ${{ runner.tool_cache }}/gitversion/bin/dotnet-gitversion
