@@ -4,6 +4,9 @@ on:
   pull_request:
     branches:
       - main
+  push:
+    branches:
+      - main
   workflow_dispatch:
     inputs:
       version:
@@ -18,8 +21,6 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      VERSION: '1.0.0'
 
     steps:
       - name: Checkout code
@@ -51,6 +52,8 @@ jobs:
 
   set_version:
     runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     outputs:
       new_version: ${{ steps.bump_version.outputs.new_version }}
     steps:
@@ -81,7 +84,6 @@ jobs:
           echo "new_version=$new_version" >> $GITHUB_OUTPUT
 
       - name: Update Version in build.gradle.kts
-        if: github.event_name == 'workflow_dispatch'
         run: |
           sed -i 's/version = "[^"]*"/version = "${{ steps.bump_version.outputs.new_version }}"/' build.gradle.kts
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
@@ -95,7 +97,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    if: github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
       - name: Checkout code
