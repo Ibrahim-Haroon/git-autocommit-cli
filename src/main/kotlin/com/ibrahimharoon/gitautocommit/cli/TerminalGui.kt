@@ -6,6 +6,7 @@ import com.github.ajalt.mordant.rendering.TextStyles
 import com.github.ajalt.mordant.terminal.StringPrompt
 import com.github.ajalt.mordant.terminal.Terminal
 import com.github.ajalt.mordant.widgets.Panel
+import com.ibrahimharoon.gitautocommit.cache.RegenConversationCache
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 
@@ -17,6 +18,7 @@ class TerminalGui(
 ) {
     private val terminal = Terminal()
     private var commitMessage: String = initialCommitMessage
+    private val conversationCache = RegenConversationCache
 
     fun terminal() = terminal
 
@@ -62,6 +64,7 @@ class TerminalGui(
             expand = true
         )
 
+        conversationCache["ai"] = commitMessage
         terminal.println(commitMessagePanel)
     }
 
@@ -97,6 +100,8 @@ class TerminalGui(
             terminal.println(TextStyles.bold(TextColors.yellow("No additional prompt provided. Using default settings.")))
         }
 
+        conversationCache["user"] = additionalLlmPrompt ?: "No additional prompt provided. Using default settings."
+
         commitMessage = GitOperations.generateMessage(
             config,
             withGui = false,
@@ -105,6 +110,8 @@ class TerminalGui(
         if (commitMessage.isEmpty()) {
             terminal.println(TextStyles.bold(TextColors.red("Failed to generate a new commit message. Exiting.")))
         }
+
+        conversationCache["ai"] = commitMessage
     }
 
     private fun copyToClipboard(text: String) {

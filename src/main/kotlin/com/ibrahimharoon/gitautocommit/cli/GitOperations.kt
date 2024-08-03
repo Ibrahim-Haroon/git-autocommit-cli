@@ -3,6 +3,7 @@ package com.ibrahimharoon.gitautocommit.cli
 import com.github.ajalt.mordant.rendering.TextColors
 import com.github.ajalt.mordant.rendering.TextStyles
 import com.github.ajalt.mordant.terminal.Terminal
+import com.ibrahimharoon.gitautocommit.cache.RegenConversationCache
 import com.ibrahimharoon.gitautocommit.services.GitService
 import com.ibrahimharoon.gitautocommit.services.GoogleVertexLlmResponse
 import com.ibrahimharoon.gitautocommit.services.LocalLlmResponse
