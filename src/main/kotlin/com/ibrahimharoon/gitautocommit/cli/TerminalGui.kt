@@ -56,7 +56,7 @@ class TerminalGui(
 
         val commitMessagePanel = Panel(
             content = TextStyles.bold(TextColors.white(commitMessageTitle)) +
-                    TextStyles.bold(TextColors.yellow(commitMessage)),
+                TextStyles.bold(TextColors.yellow(commitMessage)),
             borderStyle = TextColors.rgb("#4b25b9"),
             borderType = SQUARE_DOUBLE_SECTION_SEPARATOR,
             expand = true

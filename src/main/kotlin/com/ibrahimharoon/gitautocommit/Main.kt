@@ -5,8 +5,8 @@ import com.ibrahimharoon.gitautocommit.cli.CliConfig
 import com.ibrahimharoon.gitautocommit.cli.CommitConfig
 import com.ibrahimharoon.gitautocommit.cli.GitOperations
 import io.github.cdimascio.dotenv.Dotenv
-import org.slf4j.LoggerFactory
 import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 fun main(args: Array<String>) {
     val logger: Logger = LoggerFactory.getLogger("Main")

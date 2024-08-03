@@ -13,7 +13,7 @@ import org.springframework.web.client.exchange
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
-object GoogleVertexLlmResponse: LlmResponseService {
+object GoogleVertexLlmResponse : LlmResponseService {
     val dotenv = Dotenv.configure()
         .directory(System.getProperty("user.home") + "/.local/bin")
         .filename("autocommit-config.env")
@@ -21,7 +21,7 @@ object GoogleVertexLlmResponse: LlmResponseService {
 
     private val headers = HttpHeaders().apply {
         set("Content-Type", "application/json")
-        set ("Authorization", "Bearer ${getAuthToken()}")
+        set("Authorization", "Bearer ${getAuthToken()}")
     }
 
     override fun getMessage(gitData: String, isPr: Boolean, additionalLlmPrompt: String): String {

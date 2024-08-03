@@ -4,9 +4,13 @@ import com.github.ajalt.mordant.animation.progress.advance
 import com.github.ajalt.mordant.animation.progress.animateOnThread
 import com.github.ajalt.mordant.animation.progress.execute
 import com.github.ajalt.mordant.terminal.Terminal
-import com.github.ajalt.mordant.widgets.progress.*
-import org.slf4j.LoggerFactory
+import com.github.ajalt.mordant.widgets.progress.marquee
+import com.github.ajalt.mordant.widgets.progress.percentage
+import com.github.ajalt.mordant.widgets.progress.progressBar
+import com.github.ajalt.mordant.widgets.progress.progressBarLayout
+import com.github.ajalt.mordant.widgets.progress.speed
 import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.util.concurrent.Executors
 
 object ProgressBarGui {
@@ -23,7 +27,6 @@ object ProgressBarGui {
                 speed("B/s", style = terminal.theme.info)
             }.animateOnThread(terminal)
             val progressFuture = progress.execute()
-
 
             val taskFuture = taskExecutorService.submit(task)
 
