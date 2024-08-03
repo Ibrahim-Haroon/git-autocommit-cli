@@ -5,7 +5,7 @@
 [![Java Version](https://img.shields.io/badge/java-11-yellow)](https://www.oracle.com/java/technologies/javase-jdk11-downloads.html)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![build](https://github.com/Ibrahim-Haroon/git-autocommit-cli/actions/workflows/build.yaml/badge.svg)](https://github.com/Ibrahim-Haroon/git-autocommit-cli/actions/workflows/build.yaml)
-[![GitHub Release](https://img.shields.io/github/v/release/Ibrahim-Haroon/git-autocommit-cli?include_prereleases&sort=semver)](https://github.com/Ibrahim-Haroon/git-autocommit-cli/releases)
+[![GitHub Release](https://img.shields.io/github/v/release/Ibrahim-Haroon/git-autocommit-cli?include_prereleases&sort=semver&style=flat-square&logo=github)](https://github.com/Ibrahim-Haroon/git-autocommit-cli/releases)
 
 AutoCommit is a powerful CLI tool that leverages AI to generate meaningful commit and PR messages to save you time!
 
