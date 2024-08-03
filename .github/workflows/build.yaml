@@ -1,9 +1,10 @@
 name: build
 
 on:
-  pull_request:
+  push:
     branches-ignore:
       - main
+  workflow_dispatch: {}
 concurrency:
   group: 'git-autocommit-cli-${{ github.ref }}'
   cancel-in-progress: true
