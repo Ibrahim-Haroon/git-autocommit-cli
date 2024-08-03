@@ -14,7 +14,7 @@ application {
 }
 
 group = "com.ibrahimharoon.gitautocommit"
-version = "1.0.0"
+version = System.getenv("VERSION") ?: "1.0.0"
 
 java {
 }
