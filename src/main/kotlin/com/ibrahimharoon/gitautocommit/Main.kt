@@ -30,6 +30,18 @@ fun main(args: Array<String>) {
         return
     }
 
+    if (cliArgs.setGoogleVertexProjectId != null) {
+        CliConfig.setGoogleVertexProjectId(cliArgs.setGoogleVertexProjectId)
+        logger.info("Google vertex project id set to ${cliArgs.setGoogleVertexProjectId}")
+        return
+    }
+
+    if (cliArgs.setGoogleVertexLocation != null) {
+        CliConfig.setGoogleVertexLocation(cliArgs.setGoogleVertexLocation)
+        logger.info("Google vertex location set to ${cliArgs.setGoogleVertexLocation}")
+        return
+    }
+
     val dotenv = Dotenv.configure()
         .directory(System.getProperty("user.home") + "/.local/bin")
         .filename("autocommit-config.env")

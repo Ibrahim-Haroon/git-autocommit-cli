@@ -4,6 +4,7 @@ import com.ibrahimharoon.gitautocommit.rest.dtos.GoogleVertexResponseDto
 import com.ibrahimharoon.gitautocommit.services.LlmConstants.Companion.COMMIT_PROMPT
 import com.ibrahimharoon.gitautocommit.services.LlmConstants.Companion.PR_SUMMARY_PROMPT
 import com.ibrahimharoon.gitautocommit.services.LlmConstants.Companion.ROLE
+import io.github.cdimascio.dotenv.Dotenv
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
@@ -13,12 +14,11 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 
 object GoogleVertexLlmResponse: LlmResponseService {
-    private val restTemplate = RestTemplate()
-    private const val PROJECT_ID = "l-ulti-tf-48hours-d55d"
-    private const val LOCATION = "us-central1"
-    private const val MODEL = "gemini-1.5-flash"
-    private const val BASE_URL = "https://us-central1-aiplatform.googleapis.com/v1/projects"
-    private const val URL = "$BASE_URL/$PROJECT_ID/locations/$LOCATION/publishers/google/models/$MODEL:generateContent"
+    val dotenv = Dotenv.configure()
+        .directory(System.getProperty("user.home") + "/.local/bin")
+        .filename("autocommit-config.env")
+        .load()
+
     private val headers = HttpHeaders().apply {
         set("Content-Type", "application/json")
         set ("Authorization", "Bearer ${getAuthToken()}")
@@ -83,4 +83,11 @@ object GoogleVertexLlmResponse: LlmResponseService {
             ""
         }
     }
+
+    private val restTemplate = RestTemplate()
+    private val PROJECT_ID = dotenv["GOOGLE_VERTEX_PROJECT_ID"]
+    private val LOCATION = dotenv["GOOGLE_VERTEX_LOCATION"]
+    private const val MODEL = "gemini-1.5-flash"
+    private const val BASE_URL = "https://us-central1-aiplatform.googleapis.com/v1/projects"
+    private val URL = "$BASE_URL/$PROJECT_ID/locations/$LOCATION/publishers/google/models/$MODEL:generateContent"
 }

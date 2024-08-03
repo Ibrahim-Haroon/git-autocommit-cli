@@ -7,6 +7,8 @@ import kotlinx.cli.default
 data class CliArguments(
     val setDefault: String?,
     val setOpenaiApiKey: String?,
+    val setGoogleVertexProjectId: String?,
+    val setGoogleVertexLocation: String?,
     val useLocal: Boolean,
     val useOpenai: Boolean,
     val useGoogle: Boolean,
@@ -30,6 +32,20 @@ object CliArgParser {
             ArgType.String,
             fullName = "set-openai-key",
             description = "Set OpenAI API key"
+        )
+
+        val setGoogleVertexProjectId by parser.option(
+            ArgType.String,
+            fullName = "set-google-vertex-project-id",
+            shortName = "vertex-project-id",
+            description = "Set the Google vertex project ID"
+        )
+
+        val setGoogleVertexLocation by parser.option(
+            ArgType.String,
+            fullName = "set-google-vertex-location",
+            shortName = "vertex-location",
+            description = "Set the Google vertex location"
         )
 
         val useLocal by parser.option(
@@ -79,6 +95,8 @@ object CliArgParser {
         return CliArguments(
             setDefault,
             setOpenaiApiKey,
+            setGoogleVertexProjectId,
+            setGoogleVertexLocation,
             useLocal,
             useOpenai,
             useGoogle,

@@ -27,4 +27,14 @@ object CliConfig {
         properties.setProperty("OPENAI_API_KEY", apiKey)
         properties.store(configFile.outputStream(), null)
     }
+
+    fun setGoogleVertexProjectId(googleVertexProjectId: String) {
+        properties.setProperty("GOOGLE_VERTEX_PROJECT_ID", googleVertexProjectId)
+        properties.store(configFile.outputStream(), null)
+    }
+
+    fun setGoogleVertexLocation(googleVertexLocation: String) {
+        properties.setProperty("GOOGLE_VERTEX_LOCATION", googleVertexLocation)
+        properties.store(configFile.outputStream(), null)
+    }
 }

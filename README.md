@@ -60,9 +60,14 @@ Generate a commit message using:
   autocommit --set-openai-key <api-key>
     ```
 - Google Vertex AI model:
+  - You must first set the Project Id and Location
     ```shell
-    autocommit --google
+    autocommit --set-google-vertex-project-id YOUR_PROJECT_ID
+    autocommit --set-google-vertex-location YOUR_LOCATION
     ```
+  ```shell
+    autocommit --google
+  ```
 
 #### Set default settings using:
 ```shell
