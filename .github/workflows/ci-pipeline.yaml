@@ -113,11 +113,17 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.BYPASS_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./build/libs/git-auto-commit-cli-${{ steps.get_current_version.outputs.version}}-all.jar
+          asset_path: ./build/libs/git-auto-commit-cli-${{ steps.get_current_version.outputs.version }}-all.jar
           asset_name: git-auto-commit-cli-${{ steps.bump_version.outputs.new_version }}-all.jar
           asset_content_type: application/java-archive
 
       - name: Update Major Version Tag
         run: |
-          git tag -fa v1 -m "Update v1 tag to latest release" v${{ steps.bump_version.outputs.new_version }}
+          git fetch --all --tags
+          git tag -fa v1 -m "Update v1 tag to latest release"
           git push origin v1 --force
+
+      - name: Update Version Tag
+        run: |
+          git tag -a v${{ steps.bump_version.outputs.new_version }} -m "Release ${{ steps.bump_version.outputs.new_version }}"
+          git push origin v${{ steps.bump_version.outputs.new_version }}
