@@ -45,7 +45,10 @@ jobs:
   set_version_and_release:
     needs: build
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: |
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/main' &&
+      github.event.head_commit.author.name != 'GitHub Actions Bot'
     env:
       GITHUB_TOKEN: ${{ secrets.BYPASS_TOKEN }}
 
@@ -85,10 +88,8 @@ jobs:
       - name: Update Version in build.gradle.kts
         run: |
           sed -i 's/version = "[^"]*"/version = "${{ steps.bump_version.outputs.new_version }}"/' build.gradle.kts
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "github-actions[bot]"
           git add build.gradle.kts
-          git commit -m "Bump version to ${{ steps.bump_version.outputs.new_version }}"
+          git commit -m "Bump version to ${{ steps.bump_version.outputs.new_version }} [skip ci]"
           git push origin HEAD:main
 
       - name: Download build artifact
