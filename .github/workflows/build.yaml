@@ -4,6 +4,9 @@ on:
   pull_request:
     branches-ignore:
       - main
+concurrency:
+  group: 'git-autocommit-cli-${{ github.ref }}'
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -19,15 +22,14 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
 
-      - name: Install ktlint
-        run: |
-          curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.45.2/ktlint && chmod a+x ktlint
+      - name: Lint
+        run: ./gradlew ktlintCheck
 
-      - name: Run ktlint
-        run: ./ktlint --relative src/**/*.kt
-
-      - name: Build with Gradle
+      - name: Build
         run: ./gradlew build
 
-      - name: Run tests
+      - name: Test
         run: ./gradlew test
+
+      - name: Package
+        run: ./gradlew shadowJar
