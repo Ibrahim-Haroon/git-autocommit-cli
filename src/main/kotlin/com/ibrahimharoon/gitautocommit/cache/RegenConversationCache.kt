@@ -1,6 +1,6 @@
 package com.ibrahimharoon.gitautocommit.cache
 
-object RegenConversationCache: LocalCache<String, String> {
+object RegenConversationCache : LocalCache<String, String> {
     private val cache: HashMap<String, String> = HashMap()
     private var counter: Int = 0
 
