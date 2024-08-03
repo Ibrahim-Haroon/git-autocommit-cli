@@ -1,5 +1,6 @@
 package com.ibrahimharoon.gitautocommit.services
 
+import com.ibrahimharoon.gitautocommit.cache.RegenConversationCache
 import com.ibrahimharoon.gitautocommit.rest.dtos.DefaultLlmResponseDto
 import com.ibrahimharoon.gitautocommit.services.LlmConstants.Companion.COMMIT_PROMPT
 import com.ibrahimharoon.gitautocommit.services.LlmConstants.Companion.PR_SUMMARY_PROMPT
@@ -15,6 +16,7 @@ class DefaultLlmResponseService(
     private val url: String,
     private val headers: HttpHeaders
 ) : LlmResponseService {
+    private val conversationCache = RegenConversationCache
 
     override fun getMessage(gitData: String, isPr: Boolean, additionalLlmPrompt: String): String {
         var prompt = ""
@@ -22,6 +24,7 @@ class DefaultLlmResponseService(
             prompt = "Your previous commit message was no good. This is an additional prompt to help you out: $additionalLlmPrompt\n\n"
         }
         prompt += if (isPr) PR_SUMMARY_PROMPT else COMMIT_PROMPT
+        prompt += if (conversationCache.isNotEmpty()) "Previous history: $conversationCache" else ""
 
         val payload = mapOf(
             "model" to model,
