@@ -4,6 +4,7 @@ kotlin = "1.9.0"
 springBoot = "2.7.12"
 springDependencyManagement = "1.0.15.RELEASE"
 shadowjar = "8.1.1"
+ktlint= "11.0.0"
 
 [libraries]
 # SpringBoot
@@ -26,3 +27,4 @@ kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 springBoot = { id = "org.springframework.boot", version.ref = "springBoot" }
 springDependencyManagement = { id = "io.spring.dependency-management", version.ref = "springDependencyManagement" }
 shadowJar = { id = "com.github.johnrengelman.shadow", version.ref = "shadowjar" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }

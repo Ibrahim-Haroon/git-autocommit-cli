@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.springBoot)
     alias(libs.plugins.springDependencyManagement)
     alias(libs.plugins.shadowJar)
+    alias(libs.plugins.ktlint)
     application
 }
 
