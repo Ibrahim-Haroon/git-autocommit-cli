@@ -1,7 +1,5 @@
 #!/bin/bash
 
-GITHUB_REPO="Ibrahim-Haroon/git-autocommit-cli"
-JAR_NAME="autocommit.jar"
 
 main() {
   detect_os
@@ -26,21 +24,27 @@ detect_os() {
 }
 
 get_latest_release() {
-  echo "Fetching latest release from GitHub..."
+    echo "Fetching latest release from GitHub..."
 
-  LATEST_RELEASE_INFO=$(curl -s https://api.github.com/repos/$GITHUB_REPO/releases/latest)
+    local REPO="Ibrahim-Haroon/git-autocommit-cli"
+    local API_URL="https://api.github.com/repos/$REPO/releases/latest"
+    local DOWNLOAD_URL=$(curl -s "$API_URL" | jq -r '.assets[0].browser_download_url')
+    local VERSION=$(curl -s "$API_URL" | jq -r '.tag_name')
 
-  LATEST_RELEASE_URL=$(echo "$LATEST_RELEASE_INFO" | grep "browser_download_url.*$JAR_NAME" | cut -d '"' -f 4)
-  LATEST_VERSION=$(echo "$LATEST_RELEASE_INFO" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+    if [[ -z "$DOWNLOAD_URL" ]]; then
+        echo "Failed to fetch the latest release. Please check the repository name and release asset name."
+        return 1
+    fi
 
-  if [[ -z "$LATEST_RELEASE_URL" ]]; then
-    echo "Failed to fetch the latest release. Please check the repository name and release asset name."
-    exit 1
-  fi
+    echo "Latest version: $VERSION"
+    echo "Downloading from $DOWNLOAD_URL..."
 
-  echo "Latest version: $LATEST_VERSION"
-  echo "Downloading $LATEST_RELEASE_URL..."
-  curl -L "$LATEST_RELEASE_URL" -o "$INSTALL_DIR/$JAR_NAME"
+    if curl -L "$DOWNLOAD_URL" -o "$INSTALL_DIR/git-auto-commit-cli.jar"; then
+        echo "Successfully downloaded git-auto-commit-cli.jar to $INSTALL_DIR"
+    else
+        echo "Failed to download the JAR file."
+        return 1
+    fi
 }
 
 place_jar_at_root_and_create_wrapper() {
