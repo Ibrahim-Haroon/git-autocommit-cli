@@ -1,6 +1,4 @@
 # 🚀 AutoCommit: Your AI-Powered Commit Message Generator 
-![build](https://github.com/UKGEPIC/git-auto-commit-cli/actions/workflows/git-autocommit-cli-ci-workflow.yaml/badge.svg)
-![Application](https://img.shields.io/badge/application-Internal-brown)
 ![Java Version](https://img.shields.io/badge/java-11-yellow)
 
 AutoCommit is a powerful CLI tool that leverages AI to generate meaningful commit and PR messages to save you time!
@@ -16,7 +14,7 @@ AutoCommit is a powerful CLI tool that leverages AI to generate meaningful commi
 
 1. Clone the repository
     ```shell
-    git clone git@github.com:UKGEPIC/git-auto-commit-cli.git
+    git clone https://github.com/Ibrahim-Haroon/git-autocommit-cli.git
     ```
 2. Create JAR file locally
     ```shell
@@ -65,7 +63,6 @@ Generate a commit message using:
     ```shell
     autocommit --google
     ```
-  It is free for UKrewers but you'll need to follow this tutorial to set it up: [Google Vertex AI](https://github.com/UKGEPIC/git-auto-commit-cli/wiki/Google-Vertex-AI-Access)
 
 #### Set default settings using:
 ```shell
@@ -93,3 +90,14 @@ Options:
 1. Download the model from [Hugging Face](https://huggingface.co/TheBloke/Llama-2-13B-chat-GGUF/blob/main/llama-2-13b-chat.Q4_K_M.gguf)
 2. Place it in the `localLLM` directory
 3. Run the model
+
+## 🤝 Contributing
+
+We welcome contributions to this project! Here's how you can help:
+
+1. Create an issue ticket
+2. Fork the repository
+3. Make your changes
+4. Submit a pull request
+
+Please ensure your code adheres to our style guide.
