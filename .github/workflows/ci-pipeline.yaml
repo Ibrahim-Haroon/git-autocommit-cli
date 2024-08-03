@@ -77,14 +77,14 @@ jobs:
           echo "New version: $new_version"
           echo "new_version=$new_version" >> $GITHUB_OUTPUT
 
-      - name: Update Version in build.gradle.kts
-        run: |
-          sed -i 's/version = "[^"]*"/version = "${{ steps.bump_version.outputs.new_version }}"/' build.gradle.kts
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "github-actions[bot]"
-          git add build.gradle.kts
-          git commit -m "Bump version to ${{ steps.bump_version.outputs.new_version }}"
-          git push origin HEAD:main
+#      - name: Update Version in build.gradle.kts
+#        run: |
+#          sed -i 's/version = "[^"]*"/version = "${{ steps.bump_version.outputs.new_version }}"/' build.gradle.kts
+#          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+#          git config --global user.name "github-actions[bot]"
+#          git add build.gradle.kts
+#          git commit -m "Bump version to ${{ steps.bump_version.outputs.new_version }}"
+#          git push origin HEAD:main
 
       - name: Download build artifact
         uses: actions/download-artifact@v3
