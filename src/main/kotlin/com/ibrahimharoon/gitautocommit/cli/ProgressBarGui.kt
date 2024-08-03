@@ -30,10 +30,17 @@ object ProgressBarGui {
 
             val taskFuture = taskExecutorService.submit(task)
 
-            progress.update { total = 2_000 }
+            progress.update { total = totalTime }
+            var elapsed = 0L
             while (!taskFuture.isDone) {
                 progress.advance(100)
-                Thread.sleep(100)
+                Thread.sleep(50)
+                elapsed += 100
+            }
+
+            if (elapsed >= timeout) {
+                taskFuture.cancel(true)
+                logger.warn("Task timed out after $timeout ms")
             }
 
             val result = taskFuture.get()
@@ -47,4 +54,7 @@ object ProgressBarGui {
             taskExecutorService.shutdown()
         }
     }
+
+    private const val totalTime = 2_000L
+    private const val timeout = 2_0001L
 }
