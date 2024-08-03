@@ -14,7 +14,7 @@ application {
 }
 
 group = "com.ibrahimharoon.gitautocommit"
-version = System.getenv("VERSION") ?: "1.0.0"
+version = "1.0.0"  // This will be updated by the CI workflow
 
 java {
 }
