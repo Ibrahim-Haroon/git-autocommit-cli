@@ -9,9 +9,6 @@ concurrency:
   group: 'git-autocommit-cli-${{ github.ref }}'
   cancel-in-progress: true
 
-env:
-  build-number: ${GITHUB_RUN_NUMBER}
-
 jobs:
   build:
     runs-on: ubuntu-latest
