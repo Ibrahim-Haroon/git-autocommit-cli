@@ -1,5 +1,6 @@
 package com.ibrahimharoon.gitautocommit.cache
 
-interface LocalCache<K, V> {
-    operator fun set(key: K, value: V)
+interface LocalCache {
+    operator fun set(key: String, value: String)
+    fun isNotEmpty(): Boolean
 }

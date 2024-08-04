@@ -1,6 +1,6 @@
 package com.ibrahimharoon.gitautocommit.cache
 
-object RegenConversationCache : LocalCache<String, String> {
+object RegenConversationCache : LocalCache {
     private val cache: HashMap<String, String> = HashMap()
     private var counter: Int = 0
 
@@ -9,12 +9,8 @@ object RegenConversationCache : LocalCache<String, String> {
         counter++
     }
 
-    fun isNotEmpty(): Boolean {
+    override fun isNotEmpty(): Boolean {
         return cache.isNotEmpty()
-    }
-
-    fun clear() {
-        cache.clear()
     }
 
     override fun toString(): String {
