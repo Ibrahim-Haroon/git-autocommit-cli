@@ -1,8 +1,7 @@
 package com.ibrahimharoon.gitautocommit.git
 
-import java.io.BufferedReader
+import com.ibrahimharoon.gitautocommit.cli.TerminalService
 import java.io.File
-import java.io.InputStreamReader
 
 /**
  * Object responsible for interacting with Git and retrieving relevant information.
@@ -41,7 +40,7 @@ object GitService {
             add("git")
             addAll(gitBranchArgs)
         }
-        return executeCommand(cliCommand) ?: ""
+        return TerminalService.executeCommand(cliCommand)
     }
 
     /**
@@ -58,7 +57,7 @@ object GitService {
             add("git")
             addAll(gitLogArgs)
         }
-        return executeCommand(cliCommand) ?: ""
+        return TerminalService.executeCommand(cliCommand)
     }
 
     /**
@@ -76,8 +75,8 @@ object GitService {
             add("--name-only")
         }
 
-        val modifiedFiles = executeCommand(cliCommand)
-        if (modifiedFiles.isNullOrEmpty()) {
+        val modifiedFiles = TerminalService.executeCommand(cliCommand)
+        if (modifiedFiles.isEmpty()) {
             return ""
         }
 
@@ -93,28 +92,11 @@ object GitService {
             add("git")
             addAll(gitDiffArgs)
         }
-        val diffResult = executeCommand(diffCommand)
+        val diffResult = TerminalService.executeCommand(diffCommand)
 
         return mapOf(
             "files" to filteredModifiedFiles,
-            "diff" to (diffResult ?: "")
+            "diff" to (diffResult)
         ).toString()
-    }
-
-    /**
-     * Executes a Git command and returns its output.
-     *
-     * @param command A list of strings representing the command to be executed.
-     * @return The output of the command as a string, or null if the command produced no output.
-     */
-    private fun executeCommand(command: List<String>): String? {
-        val process = ProcessBuilder(command)
-            .redirectErrorStream(true)
-            .start()
-
-        val stdout = BufferedReader(InputStreamReader(process.inputStream)).readText()
-        process.waitFor()
-
-        return stdout.trim().takeIf { it.isNotEmpty() }
     }
 }

@@ -1,12 +1,11 @@
 package com.ibrahimharoon.gitautocommit.git
 
 import com.github.ajalt.mordant.rendering.TextColors
+import com.ibrahimharoon.gitautocommit.cli.TerminalService
 import com.ibrahimharoon.gitautocommit.core.SummaryOptions
 import com.ibrahimharoon.gitautocommit.gui.ProgressBarGui
 import com.ibrahimharoon.gitautocommit.gui.TerminalGui
 import org.slf4j.LoggerFactory
-import java.awt.Toolkit
-import java.awt.datatransfer.StringSelection
 
 /**
  * Object responsible for summarizing git changes, generating commit messages or PR summaries.
@@ -99,7 +98,7 @@ object GitChangesSummarizer {
      * @param terminalGui The [TerminalGui] instance for user interaction.
      */
     private fun handlePrMessage(message: String, terminalGui: TerminalGui) {
-        copyToClipboard(message)
+        TerminalService.copyToClipboard(message)
         terminalGui.terminal().println("PR summary generated successfully")
         terminalGui.terminal().println(TextColors.yellow("PR summary copied to clipboard!"))
     }
@@ -131,16 +130,5 @@ object GitChangesSummarizer {
         } catch (e: Exception) {
             logger.error("Exception during git commit: ${e.message}")
         }
-    }
-
-    /**
-     * Copies the provided text to the system clipboard.
-     *
-     * @param text The text to be copied to the clipboard.
-     */
-    private fun copyToClipboard(text: String) {
-        val selection = StringSelection(text)
-        val clipboard = Toolkit.getDefaultToolkit().systemClipboard
-        clipboard.setContents(selection, null)
     }
 }
