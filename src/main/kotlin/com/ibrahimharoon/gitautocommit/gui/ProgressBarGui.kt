@@ -54,14 +54,13 @@ object ProgressBarGui {
             progress.update { total = TOTAL_TIME }
             var elapsed = 0L
             while (!taskFuture.isDone) {
+                if (elapsed >= TIMEOUT) {
+                    progress.advance(TOTAL_TIME - elapsed)
+                    break
+                }
                 progress.advance(100)
                 Thread.sleep(50)
                 elapsed += 100
-            }
-
-            if (elapsed >= TIMEOUT) {
-                taskFuture.cancel(true)
-                logger.warn("Task timed out after $TIMEOUT ms")
             }
 
             val result = taskFuture.get()
@@ -86,5 +85,5 @@ object ProgressBarGui {
      * The timeout duration for the task. (2.1 seconds)
      * If the task exceeds this duration, it will be cancelled.
      */
-    private const val TIMEOUT = 2_0001L
+    private const val TIMEOUT = 2_001L
 }
