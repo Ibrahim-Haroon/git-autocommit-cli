@@ -6,6 +6,7 @@ import com.ibrahimharoon.gitautocommit.core.SummaryOptions
 import com.ibrahimharoon.gitautocommit.git.GitChangesSummarizer
 import com.ibrahimharoon.gitautocommit.llm.LlmType
 import com.ibrahimharoon.gitautocommit.llm.factory.LlmProviderFactory
+import com.ibrahimharoon.gitautocommit.services.GithubService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -20,7 +21,18 @@ fun main(args: Array<String>) {
     }
 
     if (cliArgs.showVersion) {
-        println("autocommit version ${BuildConfig.VERSION}")
+        try {
+            println(GithubService.getLatestVersion())
+        }
+        catch (e: Exception) {
+            try {
+                logger.warn("Unable to pull version from Github, trying Gradle...")
+                println("autocommit version ${BuildConfig.VERSION}")
+            }
+            catch (e: Exception) {
+                println("Unable to retrieve version from Github or Gradle")
+            }
+        }
         return
     }
 
