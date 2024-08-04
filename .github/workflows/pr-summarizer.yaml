@@ -1,0 +1,131 @@
+name: pr-summarizer.yaml
+
+on:
+  push:
+    branches-ignore:
+      - main
+  workflow_dispatch:
+concurrency:
+  group: '${{ github.repository }}-pr-summarizer-${{ github.ref }}'
+  cancel-in-progress: true
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download git-autocommit-cli latest release
+        run: |
+          DOWNLOAD_URL=$(curl -s https://api.github.com/repos/Ibrahim-Haroon/git-autocommit-cli/releases/latest | \
+                         jq -r '.assets[0].browser_download_url')
+          curl -L -o git-autocommit-cli.jar "$DOWNLOAD_URL"
+
+      - name: Upload JAR files as artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: jar-file
+          path: |
+            git-autocommit-cli.jar
+
+  review:
+    needs: prepare
+    runs-on: ubuntu-latest
+    env:
+      IS_WORKFLOW: 'true'
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+      pull-requests: 'write'
+    steps:
+      - uses: actions/github-script@v6
+        id: get_issue_number
+        with:
+          script: |
+            const pullRequest = context.payload.pull_request;
+            const issue = context.issue;
+            
+            if (pullRequest && pullRequest.number) {
+              // Return pull request number if present
+              return pullRequest.number;
+            } else if (issue && issue.number) {
+              // Return issue number if present
+              return issue.number;
+            } else {
+              // Otherwise return issue number from commit
+              const pullRequests = await github.rest.repos.listPullRequestsAssociatedWithCommit({
+                commit_sha: context.sha,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+              });
+            
+              if (pullRequests.data.length > 0) {
+                return pullRequests.data[0].number;
+              } else {
+                throw new Error('No pull requests associated with the commit.');
+              }
+            }
+          result-encoding: string
+
+      - name: Issue number
+        run: echo '${{steps.get_issue_number.outputs.result}}'
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+
+      - name: Download JAR files
+        uses: actions/download-artifact@v2
+        with:
+          name: jar-file
+
+      - name: Set up needed CLI tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y tree git
+
+      - name: Verify copy and create wrapper
+        run: |
+          ls -la
+          chmod +x git-autocommit-cli.jar
+
+          java -jar git-autocommit-cli.jar --test
+
+      - name: Run PR reviewer
+        run: |
+          git fetch --all
+          java -jar git-autocommit-cli.jar --set-default openai
+          java -jar git-autocommit-cli.jar --set-openai-key ${{ secrets.OPENAI_API_KEY }}
+          java -jar git-autocommit-cli.jar --plain-pr
+
+      - name: Comment on PR
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const review = fs.readFileSync('pr_summary.txt', 'utf8');
+            const { owner, repo } = context.repo;
+            const issue_number = ${{ steps.get_issue_number.outputs.result }};
+
+            console.log("Owner: ", owner);
+            console.log("Repo: ", repo);
+            console.log("Issue number: ", issue_number);
+
+            if (!issue_number) {
+              throw new Error("Pull request number is undefined");
+            }
+
+            if (review.trim() !== '') {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number,
+                body: review
+              });
+            }
