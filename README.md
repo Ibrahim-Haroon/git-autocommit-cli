@@ -178,6 +178,6 @@ We welcome contributions to this project! Here's how you can help:
 3. 🛠️ Make your changes
 4. 🎉 Submit a pull request
 
-> Please ensure your code adheres to our style guide.
+> Please ensure your code has kdocs and intuitive naming conventions.
 
 ---
