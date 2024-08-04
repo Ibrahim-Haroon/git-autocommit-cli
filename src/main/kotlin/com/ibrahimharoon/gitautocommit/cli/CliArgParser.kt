@@ -37,7 +37,8 @@ data class CliArguments(
     val useGoogle: Boolean,
     val isPr: Boolean,
     val isPlainPr: Boolean,
-    val isTest: Boolean
+    val isTest: Boolean,
+    val showVersion: Boolean
     // Add new properties for future arguments here
 )
 
@@ -152,6 +153,13 @@ object CliArgParser {
             description = "Test CLI tool was installed correctly"
         ).default(false)
 
+        val showVersion by parser.option(
+            ArgType.Boolean,
+            fullName = "version",
+            shortName = "v",
+            description = "Show the version of the tool"
+        ).default(false)
+
         parser.parse(args)
         return CliArguments(
             setDefault,
@@ -165,7 +173,8 @@ object CliArgParser {
             useGoogle,
             isPr,
             isPlainPr,
-            isTest
+            isTest,
+            showVersion
         )
     }
 }

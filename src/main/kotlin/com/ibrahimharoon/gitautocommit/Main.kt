@@ -19,6 +19,11 @@ fun main(args: Array<String>) {
         return
     }
 
+    if (cliArgs.showVersion) {
+        println("autocommit version ${BuildConfig.VERSION}")
+        return
+    }
+
     if (cliArgs.setDefault != null) {
         CliConfigManager.setDefaultLlmService(cliArgs.setDefault)
         logger.info("Default LLM response service set to ${cliArgs.setDefault}")
