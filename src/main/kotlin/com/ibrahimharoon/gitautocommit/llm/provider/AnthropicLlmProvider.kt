@@ -1,10 +1,17 @@
-package com.ibrahimharoon.gitautocommit.services
+package com.ibrahimharoon.gitautocommit.llm.provider
 
+import com.ibrahimharoon.gitautocommit.llm.LlmType.ANTHROPIC
+import com.ibrahimharoon.gitautocommit.llm.registry.LlmRegistry
+import com.ibrahimharoon.gitautocommit.llm.response.LlmResponse
+import com.ibrahimharoon.gitautocommit.llm.service.AnthropicLlmResponseService
+import com.ibrahimharoon.gitautocommit.templates.LlmPromptContextualizer
+import com.ibrahimharoon.gitautocommit.templates.LlmTemplates.Companion.ROLE
 import io.github.cdimascio.dotenv.Dotenv
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpHeaders
 
-object AnthropicLlmResponse : LlmResponseService {
+@LlmRegistry(ANTHROPIC)
+object AnthropicLlmResponse {
     private const val MODEL = "claude-3-sonnet-20240229"
     private const val URL = "https://api.anthropic.com/v1/messages"
     private val dotenv = Dotenv.configure()
@@ -19,25 +26,20 @@ object AnthropicLlmResponse : LlmResponseService {
         set("anthropic-version", "2023-06-01")
     }
 
-    private val baseLlmResponse = AnthropicLlmResponseService(
+    private val llmResponse = AnthropicLlmResponseService(
         MODEL,
         URL,
         headers
     )
 
-    override fun getMessage(gitData: String, isPr: Boolean, additionalLlmPrompt: String): String {
+    override fun getMessage(gitData: String, isPr: Boolean): String {
         try {
             logger.debug("Using Anthropic model to generate commit message")
-            return baseLlmResponse.getMessage(gitData, isPr, additionalLlmPrompt)
+            val prompt = LlmPromptContextualizer.generate(gitData, isPr)
+            return llmResponse.response(ROLE, prompt)
         } catch (e: Exception) {
             logger.error("Error generating commit message", e)
             return "Error generating Anthropic commit message - make sure your API key is valid/set"
         }
     }
-}
-
-fun main() {
-    val res = AnthropicLlmResponse.getMessage("test", false, "test")
-
-    println(res)
 }

@@ -1,10 +1,17 @@
-package com.ibrahimharoon.gitautocommit.services
+package com.ibrahimharoon.gitautocommit.llm.provider
 
+import com.ibrahimharoon.gitautocommit.llm.LlmType.OPENAI
+import com.ibrahimharoon.gitautocommit.llm.registry.LlmRegistry
+import com.ibrahimharoon.gitautocommit.llm.response.LlmResponse
+import com.ibrahimharoon.gitautocommit.llm.service.DefaultLlmResponseService
+import com.ibrahimharoon.gitautocommit.templates.LlmPromptContextualizer
+import com.ibrahimharoon.gitautocommit.templates.LlmTemplates.Companion.ROLE
 import io.github.cdimascio.dotenv.Dotenv
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpHeaders
 
-object OpenaiLlmResponse : LlmResponseService {
+@LlmRegistry(OPENAI)
+object OpenaiLlmResponse: LlmResponse {
     private const val MODEL = "gpt-3.5-turbo"
     private const val URL = "https://api.openai.com/v1/chat/completions"
     private val dotenv = Dotenv.configure()
@@ -23,10 +30,11 @@ object OpenaiLlmResponse : LlmResponseService {
         headers
     )
 
-    override fun getMessage(gitData: String, isPr: Boolean, additionalLlmPrompt: String): String {
+    override fun getMessage(gitData: String, isPr: Boolean): String {
         try {
             logger.debug("Using OpenAI model to generate commit message")
-            return baseLlmResponse.getMessage(gitData, isPr, additionalLlmPrompt)
+            val prompt = LlmPromptContextualizer.generate(gitData, isPr)
+            return baseLlmResponse.response(ROLE, prompt)
         } catch (e: Exception) {
             logger.error("Error generating commit message", e)
             return "Error generating OpenAI commit message - make sure your API key is valid/set"
