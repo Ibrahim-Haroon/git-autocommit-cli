@@ -1,41 +1,51 @@
 package com.ibrahimharoon.gitautocommit.llm.service
 
-import com.ibrahimharoon.gitautocommit.rest.dtos.DefaultLlmResponseDto
+import com.ibrahimharoon.gitautocommit.rest.dtos.GoogleVertexResponseDto
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.exchange
 
-class DefaultLlmResponseService(
-    private val model: String,
+class GoogleVertexLlmResponseService(
     private val url: String,
     private val headers: HttpHeaders
 ) : LlmResponseService {
+
     override fun response(role: String, prompt: String): String {
         val payload = mapOf(
-            "model" to model,
-            "messages" to listOf(
-                mapOf(
-                    "role" to "system",
-                    "content" to role
-                ),
+            "contents" to listOf(
                 mapOf(
                     "role" to "user",
-                    "content" to prompt
+                    "parts" to listOf(
+                        mapOf(
+                            "text" to prompt
+                        )
+                    )
+                )
+            ),
+            "systemInstruction" to mapOf(
+                "role" to "system",
+                "parts" to listOf(
+                    mapOf(
+                        "text" to role
+                    )
                 )
             )
         )
 
         val entity = HttpEntity(payload, headers)
-        val response = restTemplate.exchange<DefaultLlmResponseDto>(
+
+        val response = restTemplate.exchange<GoogleVertexResponseDto>(
             url,
             HttpMethod.POST,
             entity,
             Map::class.java
         )
 
-        return response.body?.choices?.firstOrNull()?.message?.content
+        println(response.body)
+
+        return response.body?.candidates?.firstOrNull()?.content?.parts?.firstOrNull()?.text
             ?: throw IllegalStateException("No content found in the response")
     }
 

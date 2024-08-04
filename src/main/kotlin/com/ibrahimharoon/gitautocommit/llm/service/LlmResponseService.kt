@@ -1,4 +1,4 @@
-package com.ibrahimharoon.gitautocommit.services
+package com.ibrahimharoon.gitautocommit.llm.service
 
 interface LlmResponseService {
     /**

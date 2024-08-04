@@ -1,50 +1,33 @@
 package com.ibrahimharoon.gitautocommit.llm.provider
 
-import com.ibrahimharoon.gitautocommit.llm.LlmType.GOOGLE_VERTEX
+import com.ibrahimharoon.gitautocommit.llm.LlmType
 import com.ibrahimharoon.gitautocommit.llm.registry.LlmRegistry
-import com.ibrahimharoon.gitautocommit.llm.response.LlmResponse
 import com.ibrahimharoon.gitautocommit.llm.service.GoogleVertexLlmResponseService
-import com.ibrahimharoon.gitautocommit.templates.LlmPromptContextualizer
-import com.ibrahimharoon.gitautocommit.templates.LlmTemplates.Companion.ROLE
+import com.ibrahimharoon.gitautocommit.llm.service.LlmResponseService
 import io.github.cdimascio.dotenv.Dotenv
-import org.slf4j.LoggerFactory
 import org.springframework.http.HttpHeaders
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
-@LlmRegistry(GOOGLE_VERTEX)
-object GoogleVertexLlmResponse: LlmResponse {
-    private val logger = LoggerFactory.getLogger(GoogleVertexLlmResponse::class.java)
+@LlmRegistry(LlmType.GOOGLE_VERTEX)
+class GoogleVertexLlmProvider : DefaultLlmProvider() {
+    override val model = "gemini-1.5-flash"
+
     private val dotenv = Dotenv.configure()
         .directory(System.getProperty("user.home") + "/.local/bin")
         .filename("autocommit-config.env")
         .load()
     private val PROJECT_ID = dotenv["GOOGLE_VERTEX_PROJECT_ID"]
     private val LOCATION = dotenv["GOOGLE_VERTEX_LOCATION"]
-    private const val MODEL = "gemini-1.5-flash"
-    private const val BASE_URL = "https://us-central1-aiplatform.googleapis.com/v1/projects"
-    private val URL = "$BASE_URL/$PROJECT_ID/locations/$LOCATION/publishers/google/models/$MODEL:generateContent"
+
+    override val url = "https://us-central1-aiplatform.googleapis.com/v1/projects/$PROJECT_ID/locations/$LOCATION/publishers/google/models/$model:generateContent"
 
     private val headers = HttpHeaders().apply {
         set("Content-Type", "application/json")
         set("Authorization", "Bearer ${getAuthToken()}")
     }
 
-    private val llmResponse = GoogleVertexLlmResponseService(
-        URL,
-        headers
-    )
-
-    override fun getMessage(gitData: String, isPr: Boolean): String {
-        try {
-            logger.debug("Using Google Vertex model to generate commit message")
-            val prompt = LlmPromptContextualizer.generate(gitData, isPr)
-            return llmResponse.response(ROLE, prompt)
-        } catch (e: Exception) {
-            logger.error("Error generating commit message", e)
-            return "Error generating Google Vertex commit message - make sure your API key is valid/set"
-        }
-    }
+    override val responseService: LlmResponseService = GoogleVertexLlmResponseService(url, headers)
 
     private fun getAuthToken(): String {
         val processBuilder = ProcessBuilder()
