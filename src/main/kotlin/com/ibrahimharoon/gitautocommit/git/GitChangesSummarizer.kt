@@ -101,7 +101,7 @@ object GitChangesSummarizer {
     private fun handlePrMessage(message: String, terminalGui: TerminalGui) {
         copyToClipboard(message)
         terminalGui.terminal().println("PR summary generated successfully")
-        terminalGui.terminal().println(TextColors.yellow("Copied to clipboard!"))
+        terminalGui.terminal().println(TextColors.yellow("PR summary copied to clipboard!"))
     }
 
     /**
@@ -125,8 +125,7 @@ object GitChangesSummarizer {
                 val errorStream = process.errorStream.bufferedReader().readText()
                 logger.error("Error executing git commit command: $errorStream")
             } else {
-                copyToClipboard(message)
-                terminalGui.terminal().println("Commit successful. Message copied to clipboard!")
+                terminalGui.terminal().println(TextColors.yellow("Commit successful!"))
                 logger.debug("Commit successful")
             }
         } catch (e: Exception) {
