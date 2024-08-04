@@ -12,6 +12,7 @@ springBoot = "2.7.12"
 springDependencyManagement = "1.0.15.RELEASE"
 shadowjar = "8.1.1"
 ktlint= "11.0.0"
+buildConfig = "3.0.3"
 
 [libraries]
 # SpringBoot
@@ -36,3 +37,4 @@ springBoot = { id = "org.springframework.boot", version.ref = "springBoot" }
 springDependencyManagement = { id = "io.spring.dependency-management", version.ref = "springDependencyManagement" }
 shadowJar = { id = "com.github.johnrengelman.shadow", version.ref = "shadowjar" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
+buildConfig = { id = "com.github.gmazzo.buildconfig", version.ref = "buildConfig" }

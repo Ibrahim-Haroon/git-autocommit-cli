@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.springDependencyManagement)
     alias(libs.plugins.shadowJar)
     alias(libs.plugins.ktlint)
+    alias(libs.plugins.buildConfig)
     application
 }
 
@@ -52,6 +53,11 @@ tasks.shadowJar {
 
 tasks.register("stage") {
     dependsOn("shadowJar")
+}
+
+buildConfig {
+    packageName("com.ibrahimharoon.gitautocommit")
+    buildConfigField("String", "VERSION", "\"${project.version}\"")
 }
 
 configurations {
