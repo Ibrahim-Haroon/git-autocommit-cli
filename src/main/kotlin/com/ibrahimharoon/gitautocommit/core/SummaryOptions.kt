@@ -1,4 +1,4 @@
-package com.ibrahimharoon.gitautocommit.cli
+package com.ibrahimharoon.gitautocommit.core
 
 import com.ibrahimharoon.gitautocommit.llm.provider.LlmProvider
 

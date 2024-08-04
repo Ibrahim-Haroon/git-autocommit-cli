@@ -1,4 +1,4 @@
-package com.ibrahimharoon.gitautocommit.cli
+package com.ibrahimharoon.gitautocommit.gui
 
 import com.github.ajalt.mordant.animation.progress.advance
 import com.github.ajalt.mordant.animation.progress.animateOnThread

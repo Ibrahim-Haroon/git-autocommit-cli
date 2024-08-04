@@ -1,19 +1,20 @@
 package com.ibrahimharoon.gitautocommit
 
 import com.ibrahimharoon.gitautocommit.cli.CliArgParser
-import com.ibrahimharoon.gitautocommit.cli.CliConfig
-import com.ibrahimharoon.gitautocommit.cli.CommitConfig
-import com.ibrahimharoon.gitautocommit.cli.GitOperations
+import com.ibrahimharoon.gitautocommit.cli.CliConfigManager
+import com.ibrahimharoon.gitautocommit.core.SummaryOptions
+import com.ibrahimharoon.gitautocommit.git.GitChangesSummarizer
+import com.ibrahimharoon.gitautocommit.llm.LlmType
+import com.ibrahimharoon.gitautocommit.llm.registry.LlmRegistryStore
+import com.ibrahimharoon.gitautocommit.llm.registry.registerAnnotatedProviders
 import io.github.cdimascio.dotenv.Dotenv
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-data class LlmChoice(val name: String, val isSelected: Boolean)
-
 fun main(args: Array<String>) {
     val logger: Logger = LoggerFactory.getLogger("Main")
     val cliArgs = CliArgParser.parse(args)
-    CliConfig.createConfigIfNotExists()
+    CliConfigManager.createConfigIfNotExists()
 
     if (cliArgs.isTest) {
         println("CLI tool installed correctly")
@@ -21,65 +22,59 @@ fun main(args: Array<String>) {
     }
 
     if (cliArgs.setDefault != null) {
-        CliConfig.setDefaultLlmService(cliArgs.setDefault)
+        CliConfigManager.setDefaultLlmService(cliArgs.setDefault)
         logger.info("Default LLM response service set to ${cliArgs.setDefault}")
         return
     }
 
     if (cliArgs.setOpenaiApiKey != null) {
-        CliConfig.setOpenaiApiKey(cliArgs.setOpenaiApiKey)
+        CliConfigManager.setOpenaiApiKey(cliArgs.setOpenaiApiKey)
         logger.info("OpenAI API key set to ${cliArgs.setOpenaiApiKey.take(10)}...")
         return
     }
 
     if (cliArgs.setAnthropicApiKey != null) {
-        CliConfig.setAnthropicApiKey(cliArgs.setAnthropicApiKey)
+        CliConfigManager.setAnthropicApiKey(cliArgs.setAnthropicApiKey)
         logger.info("Anthropic API key is to ${cliArgs.setAnthropicApiKey.take(10)}...")
         return
     }
 
     if (cliArgs.setGoogleVertexProjectId != null) {
-        CliConfig.setGoogleVertexProjectId(cliArgs.setGoogleVertexProjectId)
+        CliConfigManager.setGoogleVertexProjectId(cliArgs.setGoogleVertexProjectId)
         logger.info("Google vertex project id set to ${cliArgs.setGoogleVertexProjectId}")
         return
     }
 
     if (cliArgs.setGoogleVertexLocation != null) {
-        CliConfig.setGoogleVertexLocation(cliArgs.setGoogleVertexLocation)
+        CliConfigManager.setGoogleVertexLocation(cliArgs.setGoogleVertexLocation)
         logger.info("Google vertex location set to ${cliArgs.setGoogleVertexLocation}")
         return
     }
+
+    registerAnnotatedProviders()
 
     val dotenv = Dotenv.configure()
         .directory(System.getProperty("user.home") + "/.local/bin")
         .filename("autocommit-config.env")
         .load()
 
-    val defaultLlm = dotenv["DEFAULT_LLM"] ?: "google"
-    val llmChoices = listOf(
-        LlmChoice("local", cliArgs.useLocal),
-        LlmChoice("openai", cliArgs.useOpenai),
-        LlmChoice("anthropic", cliArgs.useAnthropic),
-        LlmChoice("google", cliArgs.useGoogle)
+    val defaultLlm = dotenv["DEFAULT_LLM"] ?: "openai"
+    val selectedLlm = when {
+        cliArgs.useLocal -> LlmType.LOCAL
+        cliArgs.useOpenai -> LlmType.OPENAI
+        cliArgs.useAnthropic -> LlmType.ANTHROPIC
+        cliArgs.useGoogle -> LlmType.GOOGLE_VERTEX
+        else -> LlmType.valueOf(defaultLlm.uppercase())
+    }
+
+    val llmProvider = LlmRegistryStore.getProvider(selectedLlm)
+
+    val options = SummaryOptions(
+        llmProvider = llmProvider,
+        isPr = cliArgs.isPr || cliArgs.isPlainPr,
+        isPlainPr = cliArgs.isPlainPr
     )
 
-    val selectedLlm = llmChoices.find { it.isSelected }?.name ?: defaultLlm
-    val useLocal = selectedLlm == "local"
-    val useOpenai = selectedLlm == "openai"
-    val useAnthropic = selectedLlm == "anthropic"
-    val useGoogle = selectedLlm == "google"
-    val isPlainPr = cliArgs.isPlainPr
-    val isPr = cliArgs.isPr || isPlainPr
-
-    val config = CommitConfig(
-        useLocal,
-        useOpenai,
-        useAnthropic,
-        useGoogle,
-        isPr,
-        isPlainPr
-    )
-
-    logger.debug("Starting git autocommit")
-    GitOperations.performCommit(config)
+    logger.debug("Starting git changes summarization")
+    GitChangesSummarizer.summarizeChanges(options)
 }

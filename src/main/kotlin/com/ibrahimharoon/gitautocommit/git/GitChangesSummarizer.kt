@@ -1,82 +1,98 @@
-package com.ibrahimharoon.gitautocommit.cli
+package com.ibrahimharoon.gitautocommit.git
 
-import com.github.ajalt.mordant.rendering.TextColors
-import com.github.ajalt.mordant.rendering.TextStyles
-import com.ibrahimharoon.gitautocommit.services.GitService
-import org.slf4j.Logger
+import com.ibrahimharoon.gitautocommit.core.SummaryOptions
+import com.ibrahimharoon.gitautocommit.gui.ProgressBarGui
+import com.ibrahimharoon.gitautocommit.gui.TerminalGui
 import org.slf4j.LoggerFactory
+import java.awt.Toolkit
+import java.awt.datatransfer.StringSelection
 
 object GitChangesSummarizer {
-    private val logger: Logger = LoggerFactory.getLogger("GitOperations")
+    private val logger = LoggerFactory.getLogger(GitChangesSummarizer::class.java)
 
-    private fun generateMessage(config: SummaryOptions, withGui: Boolean = true): String {
-        val gitData = if (config.isPr) GitService.getGitLog() else GitService.getGitDiff()
-
-        if (gitData.isEmpty()) {
-            logger.info("No changes detected. Make sure you do `git add .` before. Exiting.")
-            return ""
-        }
-
-        logger.debug("Got git diff successfully: {}", gitData)
-
-        return if (withGui) {
-            ProgressBarGui.start {
-                config.llmProvider.getMessage(gitData, config.isPr)
-            }
-        } else {
-            config.llmProvider.getMessage(gitData, config.isPr)
-        }
-    }
-
-    fun performCommit(config: SummaryOptions) {
-        if (config.isPlainPr) {
-            val commitMessage = generateMessage(config, withGui = false)
-            println(commitMessage)
+    fun summarizeChanges(options: SummaryOptions) {
+        if (options.isPlainPr) {
+            val message = generateMessage(options, withGui = false)
+            println(message)
             return
         }
 
-        var commitMessage = generateMessage(config)
+        var message = generateMessage(options)
 
-        if (commitMessage.isEmpty()) {
-            logger.info("Failed to generate a commit message. Exiting.")
+        if (message.isEmpty()) {
+            logger.info("Failed to generate a message. Exiting.")
             return
         }
 
         val terminalInteraction = TerminalGui(
-            commitMessageTitle = if (config.isPr) "Generated PR summary:\n" else "Generated commit message:\n",
-            promptMessage = if (config.isPr) "Use this PR summary?:" else "Use this commit message?:",
-            initialCommitMessage = commitMessage,
-            config = config
+            messageTitlePrefix = if (options.isPr) "Generated PR summary:" else "Generated commit message:",
+            promptMessage = if (options.isPr) "Use this PR summary?" else "Use this commit message?",
+            initialMessage = message,
+            options = options
         )
 
-        commitMessage = terminalInteraction.interactWithUser()
+        message = terminalInteraction.interactWithUser()
 
-        if (commitMessage.isEmpty()) {
-            logger.info("Commit cancelled by user. Exiting.")
+        if (message.isEmpty()) {
+            logger.info("Operation cancelled by user. Exiting.")
             return
         }
 
-        if (config.isPr) {
-            terminalInteraction.terminal().println("PR summary generated successfully \nCopied to clipboard!")
-            return
+        if (options.isPr) {
+            handlePrMessage(message, terminalInteraction)
+        } else {
+            handleCommitMessage(message, terminalInteraction)
+        }
+    }
+
+    fun generateMessage(options: SummaryOptions, withGui: Boolean = true): String {
+        val gitData = if (options.isPr) GitService.getGitLog() else GitService.getGitDiff()
+
+        if (gitData.isEmpty()) {
+            logger.info("No changes detected. Make sure you have staged changes or commits. Exiting.")
+            return ""
         }
 
+        logger.debug("Got git data successfully: {}", gitData)
+
+        return if (withGui) {
+            ProgressBarGui.start {
+                options.llmProvider.getMessage(gitData, options.isPr)
+            }
+        } else {
+            options.llmProvider.getMessage(gitData, options.isPr)
+        }
+    }
+
+    private fun handlePrMessage(message: String, terminalInteraction: TerminalGui) {
+        copyToClipboard(message)
+        terminalInteraction.terminal().println("PR summary generated successfully. Copied to clipboard!")
+    }
+
+    private fun handleCommitMessage(message: String, terminalInteraction: TerminalGui) {
         try {
-            val processBuilder = ProcessBuilder("git", "commit", "-m", commitMessage)
+            val processBuilder = ProcessBuilder("git", "commit", "-m", message)
             processBuilder.inheritIO()
 
             val process = processBuilder.start()
             val exitCode = process.waitFor()
-            val errorStream = process.errorStream.bufferedReader().readText()
 
             if (exitCode != 0) {
+                val errorStream = process.errorStream.bufferedReader().readText()
                 logger.error("Error executing git commit command: $errorStream")
             } else {
-                terminalInteraction.terminal().println(TextStyles.bold(TextColors.yellow("Copied to clipboard!")))
+                copyToClipboard(message)
+                terminalInteraction.terminal().println("Commit successful. Message copied to clipboard!")
                 logger.debug("Commit successful")
             }
         } catch (e: Exception) {
             logger.error("Exception during git commit: ${e.message}")
         }
+    }
+
+    private fun copyToClipboard(text: String) {
+        val selection = StringSelection(text)
+        val clipboard = Toolkit.getDefaultToolkit().systemClipboard
+        clipboard.setContents(selection, null)
     }
 }
