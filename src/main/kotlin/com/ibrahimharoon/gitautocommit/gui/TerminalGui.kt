@@ -46,6 +46,7 @@ class TerminalGui(
             val prompt = StringPrompt(
                 prompt = TextColors.cyan(promptMessage),
                 terminal = terminal,
+                default = "",
                 choices = listOf("y", "n", "edit", "regen")
             )
 
