@@ -2,30 +2,14 @@ package com.ibrahimharoon.gitautocommit.cli
 
 import com.github.ajalt.mordant.rendering.TextColors
 import com.github.ajalt.mordant.rendering.TextStyles
-import com.github.ajalt.mordant.terminal.Terminal
 import com.ibrahimharoon.gitautocommit.services.GitService
-import com.ibrahimharoon.gitautocommit.services.GoogleVertexLlmResponse
-import com.ibrahimharoon.gitautocommit.services.LocalLlmResponse
-import com.ibrahimharoon.gitautocommit.services.OpenaiLlmResponse
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-object GitOperations {
+object GitChangesSummarizer {
     private val logger: Logger = LoggerFactory.getLogger("GitOperations")
 
-    private fun getLlmMessage(config: CommitConfig, gitData: String, additionalLlmPrompt: String): String {
-        return when {
-            config.useLocal -> LocalLlmResponse.getMessage(gitData, config.isPr, additionalLlmPrompt)
-            config.useOpenai -> OpenaiLlmResponse.getMessage(gitData, config.isPr, additionalLlmPrompt)
-            config.useGoogle -> GoogleVertexLlmResponse.getMessage(gitData, config.isPr, additionalLlmPrompt)
-            else -> {
-                logger.info("No LLM response service selected. Exiting.")
-                ""
-            }
-        }
-    }
-
-    fun generateMessage(config: CommitConfig, withGui: Boolean = true, additionalLlmPrompt: String = ""): String {
+    private fun generateMessage(config: SummaryOptions, withGui: Boolean = true): String {
         val gitData = if (config.isPr) GitService.getGitLog() else GitService.getGitDiff()
 
         if (gitData.isEmpty()) {
@@ -37,17 +21,17 @@ object GitOperations {
 
         return if (withGui) {
             ProgressBarGui.start {
-                getLlmMessage(config, gitData, additionalLlmPrompt)
+                config.llmProvider.getMessage(gitData, config.isPr)
             }
         } else {
-            getLlmMessage(config, gitData, additionalLlmPrompt)
+            config.llmProvider.getMessage(gitData, config.isPr)
         }
     }
 
-    fun performCommit(config: CommitConfig) {
+    fun performCommit(config: SummaryOptions) {
         if (config.isPlainPr) {
             val commitMessage = generateMessage(config, withGui = false)
-            Terminal().println(commitMessage)
+            println(commitMessage)
             return
         }
 

@@ -13,7 +13,7 @@ import java.awt.datatransfer.StringSelection
 class TerminalGui(
     private val commitMessageTitle: String,
     private val promptMessage: String,
-    private val config: CommitConfig,
+    private val config: SummaryOptions,
     initialCommitMessage: String
 ) {
     private val terminal = Terminal()
@@ -104,7 +104,7 @@ class TerminalGui(
 
         conversationCache["user"] = additionalLlmPrompt ?: "No additional prompt provided. Using default settings."
 
-        commitMessage = GitOperations.generateMessage(
+        commitMessage = GitChangesSummarizer.generateMessage(
             config,
             withGui = false,
             additionalLlmPrompt ?: ""
