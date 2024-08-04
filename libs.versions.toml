@@ -1,4 +1,11 @@
 [versions]
+# Libraries
+kotlinCLI = "0.3.6"
+cliKt = "4.4.0"
+mordant = "2.7.0"
+dotEnv = "5.2.2"
+reflections = "0.10.2"
+
 # Plugins
 kotlin = "1.9.0"
 springBoot = "2.7.12"
@@ -13,14 +20,15 @@ jacksonModuleKotlin = { module = "com.fasterxml.jackson.module:jackson-module-ko
 kotlinReflect = { module = "org.jetbrains.kotlin:kotlin-reflect" }
 
 # KotlinX
-kotlinCLI = { module = "org.jetbrains.kotlinx:kotlinx-cli", version = "0.3.6" }
+kotlinCLI = { module = "org.jetbrains.kotlinx:kotlinx-cli", version.ref = "kotlinCLI" }
 
 # Teminal GUI stuff
-cliKt = { module = "com.github.ajalt.clikt:clikt", version = "4.4.0" }
-mordant = { module = "com.github.ajalt.mordant:mordant", version = "2.7.0" }
+cliKt = { module = "com.github.ajalt.clikt:clikt", version.ref = "cliKt" }
+mordant = { module = "com.github.ajalt.mordant:mordant", version.ref = "mordant" }
 
 # Random
-dotEnv = { module = "io.github.cdimascio:java-dotenv", version = "5.2.2" }
+dotEnv = { module = "io.github.cdimascio:java-dotenv", version.ref = "dotEnv" }
+reflections = { module = "org.reflections:reflections", version.ref = "reflections" }
 
 [plugins]
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

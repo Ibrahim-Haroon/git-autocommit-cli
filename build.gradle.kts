@@ -32,7 +32,7 @@ dependencies {
     implementation(libs.cliKt)
     testImplementation(libs.mordant)
     implementation(libs.dotEnv)
-    implementation(kotlin("stdlib-jdk8"))
+    implementation(libs.reflections)
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
