@@ -28,6 +28,11 @@ object CliConfig {
         properties.store(configFile.outputStream(), null)
     }
 
+    fun setAnthropicApiKey(apiKey: String) {
+        properties.setProperty("ANTHROPIC_API_KEY", apiKey)
+        properties.store(configFile.outputStream(), null)
+    }
+
     fun setGoogleVertexProjectId(googleVertexProjectId: String) {
         properties.setProperty("GOOGLE_VERTEX_PROJECT_ID", googleVertexProjectId)
         properties.store(configFile.outputStream(), null)

@@ -7,10 +7,12 @@ import kotlinx.cli.default
 data class CliArguments(
     val setDefault: String?,
     val setOpenaiApiKey: String?,
+    val setAnthropicApiKey: String?,
     val setGoogleVertexProjectId: String?,
     val setGoogleVertexLocation: String?,
     val useLocal: Boolean,
     val useOpenai: Boolean,
+    val useAnthropic: Boolean,
     val useGoogle: Boolean,
     val isPr: Boolean,
     val isPlainPr: Boolean,
@@ -22,7 +24,12 @@ object CliArgParser {
         val parser = ArgParser("autocommit")
 
         val setDefault by parser.option(
-            ArgType.Choice(listOf("local", "openai", "google"), { it }),
+            ArgType.Choice(listOf(
+                "local",
+                "openai",
+                "google",
+                "anthropic"
+            ), { it }),
             fullName = "set-default",
             shortName = "d",
             description = "Set the default LLM response service"
@@ -32,6 +39,12 @@ object CliArgParser {
             ArgType.String,
             fullName = "set-openai-key",
             description = "Set OpenAI API key"
+        )
+
+        val setAnthropicApiKey by parser.option(
+            ArgType.String,
+            fullName = "set-anthropic-key",
+            description = "Set the anthropic API key"
         )
 
         val setGoogleVertexProjectId by parser.option(
@@ -60,6 +73,13 @@ object CliArgParser {
             fullName = "openai",
             shortName = "o",
             description = "Use OpenAI LLM response service"
+        ).default(false)
+
+        val useAnthropic by parser.option(
+            ArgType.Boolean,
+            fullName = "anthropic",
+            shortName = "a",
+            description = "Use Anthropic LLM response service"
         ).default(false)
 
         val useGoogle by parser.option(
@@ -94,10 +114,12 @@ object CliArgParser {
         return CliArguments(
             setDefault,
             setOpenaiApiKey,
+            setAnthropicApiKey,
             setGoogleVertexProjectId,
             setGoogleVertexLocation,
             useLocal,
             useOpenai,
+            useAnthropic,
             useGoogle,
             isPr,
             isPlainPr,
