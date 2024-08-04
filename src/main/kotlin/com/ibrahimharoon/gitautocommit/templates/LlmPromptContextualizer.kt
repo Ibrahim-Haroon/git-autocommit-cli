@@ -1,6 +1,5 @@
 package com.ibrahimharoon.gitautocommit.templates
 
-import com.ibrahimharoon.gitautocommit.cache.LocalCache
 import com.ibrahimharoon.gitautocommit.cache.RegenConversationCache
 import com.ibrahimharoon.gitautocommit.templates.LlmTemplates.Companion.commitPrompt
 import com.ibrahimharoon.gitautocommit.templates.LlmTemplates.Companion.prSummaryPrompt

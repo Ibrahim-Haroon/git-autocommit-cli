@@ -3,9 +3,9 @@ package com.ibrahimharoon.gitautocommit.gui
 import com.github.ajalt.mordant.rendering.BorderType
 import com.github.ajalt.mordant.rendering.TextColors
 import com.github.ajalt.mordant.rendering.TextStyles
+import com.github.ajalt.mordant.terminal.StringPrompt
 import com.github.ajalt.mordant.terminal.Terminal
 import com.github.ajalt.mordant.widgets.Panel
-import com.github.ajalt.mordant.terminal.StringPrompt
 import com.ibrahimharoon.gitautocommit.core.SummaryOptions
 import com.ibrahimharoon.gitautocommit.git.GitChangesSummarizer
 import java.awt.Toolkit
@@ -49,7 +49,7 @@ class TerminalGui(
 
         val messagePanel = Panel(
             content = TextStyles.bold(TextColors.white(messageTitlePrefix)) +
-                    TextStyles.bold(TextColors.yellow("\n$message")),
+                TextStyles.bold(TextColors.yellow("\n$message")),
             borderStyle = TextColors.rgb("#4b25b9"),
             borderType = BorderType.SQUARE_DOUBLE_SECTION_SEPARATOR,
             expand = true

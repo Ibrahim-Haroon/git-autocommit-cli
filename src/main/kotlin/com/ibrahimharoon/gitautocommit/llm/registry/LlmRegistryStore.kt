@@ -2,8 +2,8 @@ package com.ibrahimharoon.gitautocommit.llm.registry
 
 import com.ibrahimharoon.gitautocommit.llm.LlmType
 import com.ibrahimharoon.gitautocommit.llm.provider.LlmProvider
-import kotlin.reflect.KClass
 import org.reflections.Reflections
+import kotlin.reflect.KClass
 
 object LlmRegistryStore {
     private val providers = hashMapOf<LlmType, KClass<out LlmProvider>>()
