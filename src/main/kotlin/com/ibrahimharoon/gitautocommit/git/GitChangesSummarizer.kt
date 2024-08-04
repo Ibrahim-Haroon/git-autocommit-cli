@@ -6,6 +6,7 @@ import com.ibrahimharoon.gitautocommit.core.SummaryOptions
 import com.ibrahimharoon.gitautocommit.gui.ProgressBarGui
 import com.ibrahimharoon.gitautocommit.gui.TerminalGui
 import org.slf4j.LoggerFactory
+import java.io.File
 
 /**
  * Object responsible for summarizing git changes, generating commit messages or PR summaries.
@@ -26,8 +27,14 @@ object GitChangesSummarizer {
      * @param options The [SummaryOptions] containing configuration for the summarization process.
      */
     fun summarizeChanges(options: SummaryOptions) {
-        if (options.withGui) {
+        if (!options.withGui) {
             val message = generateMessage(options, withGui = false)
+
+            if (System.getenv().containsKey("IS_WORKFLOW")) {
+                File("pr_summary.txt").writeText(message)
+                return
+            }
+
             println(message)
             return
         }
