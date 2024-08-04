@@ -1,4 +1,4 @@
-package com.ibrahimharoon.gitautocommit.services
+package com.ibrahimharoon.gitautocommit.git
 
 import java.io.BufferedReader
 import java.io.File
@@ -82,14 +82,5 @@ object GitService {
         process.waitFor()
 
         return stdout.trim().takeIf { it.isNotEmpty() }
-    }
-}
-
-fun main() {
-    try {
-        val stagedDiff = GitService.getGitLog()
-        println(stagedDiff)
-    } catch (e: Exception) {
-        println(e.message)
     }
 }

@@ -3,7 +3,7 @@ package com.ibrahimharoon.gitautocommit.cli
 import java.io.File
 import java.util.Properties
 
-object CliConfig {
+object CliConfigManager {
     private val CONFIG_FILE_NAME = System.getProperty("user.home") + "/.local/bin/autocommit-config.env"
     private val configFile = File(CONFIG_FILE_NAME)
     private val properties = Properties()

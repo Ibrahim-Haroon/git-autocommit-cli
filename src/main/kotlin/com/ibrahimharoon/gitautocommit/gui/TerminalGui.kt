@@ -1,81 +1,71 @@
-package com.ibrahimharoon.gitautocommit.cli
+package com.ibrahimharoon.gitautocommit.gui
 
-import com.github.ajalt.mordant.rendering.BorderType.Companion.SQUARE_DOUBLE_SECTION_SEPARATOR
+import com.github.ajalt.mordant.rendering.BorderType
 import com.github.ajalt.mordant.rendering.TextColors
 import com.github.ajalt.mordant.rendering.TextStyles
-import com.github.ajalt.mordant.terminal.StringPrompt
 import com.github.ajalt.mordant.terminal.Terminal
 import com.github.ajalt.mordant.widgets.Panel
-import com.ibrahimharoon.gitautocommit.cache.RegenConversationCache
+import com.github.ajalt.mordant.terminal.StringPrompt
+import com.ibrahimharoon.gitautocommit.core.SummaryOptions
+import com.ibrahimharoon.gitautocommit.git.GitChangesSummarizer
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 
 class TerminalGui(
-    private val commitMessageTitle: String,
+    private val messageTitlePrefix: String,
     private val promptMessage: String,
-    private val config: SummaryOptions,
-    initialCommitMessage: String
+    private val options: SummaryOptions,
+    initialMessage: String
 ) {
     private val terminal = Terminal()
-    private var commitMessage: String = initialCommitMessage
-    private val conversationCache = RegenConversationCache
-
-    fun terminal() = terminal
+    private var message: String = initialMessage
 
     fun interactWithUser(): String {
         while (true) {
-            displayCommitMessage()
+            displayMessage()
 
             val prompt = StringPrompt(
                 prompt = TextColors.cyan(promptMessage),
                 terminal = terminal,
-                default = "",
                 choices = listOf("y", "n", "edit", "regen")
             )
 
-            val userInput = prompt.ask()
-
-            when (userInput?.lowercase()?.trim()) {
+            when (prompt.ask()?.lowercase()?.trim()) {
                 "y", "" -> return handleConfirmation()
                 "n" -> return handleCancellation()
                 "edit" -> handleEdit()
-                "regen" -> {
-                    handleRegen()
-                    if (commitMessage.isEmpty()) {
-                        return ""
-                    }
-                }
+                "regen" -> handleRegen()
+                else -> terminal.println(TextColors.red("Invalid input. Please try again."))
             }
         }
     }
 
-    private fun displayCommitMessage() {
+    private fun displayMessage() {
         terminal.cursor.move {
             up(terminal.info.height)
             startOfLine()
             clearScreenAfterCursor()
         }
 
-        val commitMessagePanel = Panel(
-            content = TextStyles.bold(TextColors.white(commitMessageTitle)) +
-                TextStyles.bold(TextColors.yellow(commitMessage)),
+        val messagePanel = Panel(
+            content = TextStyles.bold(TextColors.white(messageTitlePrefix)) +
+                    TextStyles.bold(TextColors.yellow("\n$message")),
             borderStyle = TextColors.rgb("#4b25b9"),
-            borderType = SQUARE_DOUBLE_SECTION_SEPARATOR,
+            borderType = BorderType.SQUARE_DOUBLE_SECTION_SEPARATOR,
             expand = true
         )
 
-        conversationCache["ai"] = commitMessage
-        terminal.println(commitMessagePanel)
+        terminal.println(messagePanel)
     }
 
     private fun handleConfirmation(): String {
-        terminal.println("Successfully confirmed")
-        copyToClipboard(commitMessage)
-        return commitMessage
+        terminal.println(TextColors.green("Successfully confirmed"))
+        copyToClipboard(message)
+        return message
     }
 
     private fun handleCancellation(): String {
-        terminal.println("Successfully cancelled")
+        terminal.println(TextColors.yellow("Operation cancelled"))
         return ""
     }
 
@@ -85,35 +75,30 @@ class TerminalGui(
             prompt = TextColors.cyan("Edit message"),
             terminal = terminal,
         )
-        copyToClipboard(commitMessage.replace("\n", " ").trimIndent())
-        commitMessage = editPrompt.ask()?.ifEmpty { commitMessage } ?: commitMessage
+        copyToClipboard(message.replace("\n", " ").trimIndent())
+        message = editPrompt.ask() ?: message
     }
 
     private fun handleRegen() {
-        terminal.println("Regenerating commit message...")
-        terminal.println("Cache: $conversationCache")
+        terminal.println(TextColors.yellow("Regenerating message..."))
 
-        val additionalLlmPrompt = StringPrompt(
+        val additionalPrompt = StringPrompt(
             prompt = TextColors.cyan("Pass additional prompt to LLM (optional)"),
             terminal = terminal,
         ).ask()
 
-        if (additionalLlmPrompt.isNullOrBlank()) {
+        if (additionalPrompt.isNullOrBlank()) {
             terminal.println(TextStyles.bold(TextColors.yellow("No additional prompt provided. Using default settings.")))
         }
 
-        conversationCache["user"] = additionalLlmPrompt ?: "No additional prompt provided. Using default settings."
-
-        commitMessage = GitChangesSummarizer.generateMessage(
-            config,
+        message = GitChangesSummarizer.generateMessage(
+            options,
             withGui = false,
-            additionalLlmPrompt ?: ""
         )
-        if (commitMessage.isEmpty()) {
-            terminal.println(TextStyles.bold(TextColors.red("Failed to generate a new commit message. Exiting.")))
-        }
 
-        conversationCache["ai"] = commitMessage
+        if (message.isEmpty()) {
+            terminal.println(TextStyles.bold(TextColors.red("Failed to generate a new message. Keeping the previous one.")))
+        }
     }
 
     private fun copyToClipboard(text: String) {
@@ -121,4 +106,6 @@ class TerminalGui(
         val clipboard = Toolkit.getDefaultToolkit().systemClipboard
         clipboard.setContents(stringSelection, null)
     }
+
+    fun terminal() = terminal
 }
