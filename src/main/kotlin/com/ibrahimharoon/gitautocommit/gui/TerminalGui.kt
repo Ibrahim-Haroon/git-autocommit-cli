@@ -65,8 +65,8 @@ class TerminalGui(
     private fun displayMessage() {
         when {
             options.isPr &&
-            !options.withGui &&
-            System.getenv().containsKey("IS_WORKFLOW") -> {
+                !options.withGui &&
+                System.getenv().containsKey("IS_WORKFLOW") -> {
                 File("pr_summary.txt").writeText(message)
                 return
             }
