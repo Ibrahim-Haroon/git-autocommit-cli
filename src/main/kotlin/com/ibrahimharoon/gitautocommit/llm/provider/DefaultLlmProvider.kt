@@ -1,6 +1,6 @@
 package com.ibrahimharoon.gitautocommit.llm.provider
 
-import com.ibrahimharoon.gitautocommit.templates.LlmPromptContextualizer
+import com.ibrahimharoon.gitautocommit.llm.LlmPromptContextualizer
 import com.ibrahimharoon.gitautocommit.templates.LlmTemplates.Companion.ROLE
 import org.slf4j.LoggerFactory
 

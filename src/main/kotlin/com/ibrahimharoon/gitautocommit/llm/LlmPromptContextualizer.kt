@@ -1,4 +1,4 @@
-package com.ibrahimharoon.gitautocommit.templates
+package com.ibrahimharoon.gitautocommit.llm
 
 import com.ibrahimharoon.gitautocommit.cache.RegenConversationCache
 import com.ibrahimharoon.gitautocommit.templates.LlmTemplates.Companion.commitPrompt
