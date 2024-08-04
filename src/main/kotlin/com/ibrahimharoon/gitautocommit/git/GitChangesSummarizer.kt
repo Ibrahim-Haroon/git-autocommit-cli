@@ -1,5 +1,6 @@
 package com.ibrahimharoon.gitautocommit.git
 
+import com.github.ajalt.mordant.rendering.TextColors
 import com.ibrahimharoon.gitautocommit.core.SummaryOptions
 import com.ibrahimharoon.gitautocommit.gui.ProgressBarGui
 import com.ibrahimharoon.gitautocommit.gui.TerminalGui
@@ -66,7 +67,8 @@ object GitChangesSummarizer {
 
     private fun handlePrMessage(message: String, terminalInteraction: TerminalGui) {
         copyToClipboard(message)
-        terminalInteraction.terminal().println("PR summary generated successfully. Copied to clipboard!")
+        terminalInteraction.terminal().println("PR summary generated successfully")
+        terminalInteraction.terminal().println(TextColors.yellow("Copied to clipboard!"))
     }
 
     private fun handleCommitMessage(message: String, terminalInteraction: TerminalGui) {
