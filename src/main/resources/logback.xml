@@ -5,9 +5,6 @@
         </encoder>
     </appender>
 
-    <logger name="org.reflections.Reflections" level="WARN" />
-
-    <!-- Set your application's base package to INFO -->
     <logger name="com.ibrahimharoon.gitautocommit" level="INFO" />
 
     <root level="INFO">
