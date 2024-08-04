@@ -50,11 +50,10 @@ class TerminalGui(
             )
 
             when (prompt.ask()?.lowercase()?.trim()) {
-                "y", "" -> return handleConfirmation()
                 "n" -> return handleCancellation()
                 "edit" -> handleEdit()
                 "regen" -> handleRegen()
-                else -> terminal.println(TextColors.red("Invalid input. Please try again."))
+                else -> return handleConfirmation()  // by default empty or 'y' means confirmed
             }
         }
     }
