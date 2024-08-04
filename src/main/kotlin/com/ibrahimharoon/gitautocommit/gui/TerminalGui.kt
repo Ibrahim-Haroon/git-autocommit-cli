@@ -6,10 +6,9 @@ import com.github.ajalt.mordant.rendering.TextStyles
 import com.github.ajalt.mordant.terminal.StringPrompt
 import com.github.ajalt.mordant.terminal.Terminal
 import com.github.ajalt.mordant.widgets.Panel
+import com.ibrahimharoon.gitautocommit.cli.TerminalService
 import com.ibrahimharoon.gitautocommit.core.SummaryOptions
 import com.ibrahimharoon.gitautocommit.git.GitChangesSummarizer
-import java.awt.Toolkit
-import java.awt.datatransfer.StringSelection
 
 /**
  * Handles terminal-based user interactions for reviewing and editing generated messages.
@@ -54,7 +53,7 @@ class TerminalGui(
                 "n" -> return handleCancellation()
                 "edit" -> handleEdit()
                 "regen" -> handleRegen()
-                else -> return handleConfirmation()  // by default empty or 'y' means confirmed
+                else -> return handleConfirmation() // by default empty or 'y' means confirmed
             }
         }
     }
@@ -87,7 +86,6 @@ class TerminalGui(
      */
     private fun handleConfirmation(): String {
         terminal.println(TextColors.green("Successfully confirmed"))
-        copyToClipboard(message)
         return message
     }
 
@@ -110,7 +108,7 @@ class TerminalGui(
             prompt = TextColors.cyan("Edit message"),
             terminal = terminal,
         )
-        copyToClipboard(message.replace("\n", " ").trimIndent())
+        TerminalService.copyToClipboard(message.replace("\n", " ").trimIndent())
         message = editPrompt.ask() ?: message
     }
 
@@ -137,12 +135,6 @@ class TerminalGui(
         if (message.isEmpty()) {
             terminal.println(TextStyles.bold(TextColors.red("Failed to generate a new message. Keeping the previous one.")))
         }
-    }
-
-    private fun copyToClipboard(text: String) {
-        val stringSelection = StringSelection(text)
-        val clipboard = Toolkit.getDefaultToolkit().systemClipboard
-        clipboard.setContents(stringSelection, null)
     }
 
     /**
