@@ -4,7 +4,7 @@ on:
   push:
     branches-ignore:
       - main
-  workflow_dispatch:
+  workflow_dispatch: {}
 concurrency:
   group: '${{ github.repository }}-pr-summarizer-${{ github.ref }}'
   cancel-in-progress: true
