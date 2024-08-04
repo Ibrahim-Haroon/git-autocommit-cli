@@ -9,7 +9,6 @@ import com.github.ajalt.mordant.widgets.Panel
 import com.ibrahimharoon.gitautocommit.cli.TerminalService
 import com.ibrahimharoon.gitautocommit.core.SummaryOptions
 import com.ibrahimharoon.gitautocommit.git.GitChangesSummarizer
-import java.io.File
 
 /**
  * Handles terminal-based user interactions for reviewing and editing generated messages.
@@ -63,15 +62,6 @@ class TerminalGui(
      * Displays the current message in the terminal.
      */
     private fun displayMessage() {
-        when {
-            options.isPr &&
-                !options.withGui &&
-                System.getenv().containsKey("IS_WORKFLOW") -> {
-                File("pr_summary.txt").writeText(message)
-                return
-            }
-        }
-
         terminal.cursor.move {
             up(terminal.info.height)
             startOfLine()

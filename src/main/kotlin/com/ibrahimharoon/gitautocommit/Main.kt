@@ -68,7 +68,7 @@ fun main(args: Array<String>) {
     val options = SummaryOptions(
         llmProvider = llmProvider,
         isPr = cliArgs.isPr || cliArgs.isPlainPr,
-        withGui = cliArgs.isPlainPr
+        withGui = !cliArgs.isPlainPr
     )
 
     logger.debug("Starting git changes summarization")
