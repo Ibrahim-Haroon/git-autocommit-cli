@@ -4,11 +4,6 @@ on:
   push:
     branches-ignore:
       - main
-    paths:
-      - 'src/**'
-      - 'build.gradle.kts'
-      - 'libs.versions.toml'
-      - 'settings.gradle.kts'
   workflow_dispatch: {}
 concurrency:
   group: 'git-autocommit-cli-${{ github.ref }}'
