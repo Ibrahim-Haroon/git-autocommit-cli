@@ -24,12 +24,15 @@ object CliArgParser {
         val parser = ArgParser("autocommit")
 
         val setDefault by parser.option(
-            ArgType.Choice(listOf(
-                "local",
-                "openai",
-                "google",
-                "anthropic"
-            ), { it }),
+            ArgType.Choice(
+                listOf(
+                    "local",
+                    "openai",
+                    "google",
+                    "anthropic"
+                ),
+                { it }
+            ),
             fullName = "set-default",
             shortName = "d",
             description = "Set the default LLM response service"
