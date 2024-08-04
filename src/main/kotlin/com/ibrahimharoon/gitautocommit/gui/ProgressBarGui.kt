@@ -63,8 +63,8 @@ object ProgressBarGui {
                 elapsed += 100
             }
 
-            val result = taskFuture.get()
             progressFuture.get()
+            val result = taskFuture.get()
 
             return result
         } catch (e: Exception) {
