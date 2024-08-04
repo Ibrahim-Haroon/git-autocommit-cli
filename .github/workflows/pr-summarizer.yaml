@@ -1,9 +1,8 @@
 name: pr-summarizer.yaml
 
 on:
-  push:
-    branches-ignore:
-      - main
+  pull_request:
+    types: [opened, reopened, synchronize]
   workflow_dispatch: {}
 concurrency:
   group: '${{ github.repository }}-pr-summarizer-${{ github.ref }}'
