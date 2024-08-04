@@ -8,6 +8,8 @@ import io.github.cdimascio.dotenv.Dotenv
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
+data class LlmChoice(val name: String, val isSelected: Boolean)
+
 fun main(args: Array<String>) {
     val logger: Logger = LoggerFactory.getLogger("Main")
     val cliArgs = CliArgParser.parse(args)
@@ -30,6 +32,12 @@ fun main(args: Array<String>) {
         return
     }
 
+    if (cliArgs.setAnthropicApiKey != null) {
+        CliConfig.setAnthropicApiKey(cliArgs.setAnthropicApiKey)
+        logger.info("Anthropic API key is to ${cliArgs.setAnthropicApiKey.take(10)}...")
+        return
+    }
+
     if (cliArgs.setGoogleVertexProjectId != null) {
         CliConfig.setGoogleVertexProjectId(cliArgs.setGoogleVertexProjectId)
         logger.info("Google vertex project id set to ${cliArgs.setGoogleVertexProjectId}")
@@ -48,15 +56,25 @@ fun main(args: Array<String>) {
         .load()
 
     val defaultLlm = dotenv["DEFAULT_LLM"] ?: "google"
-    val useLocal = cliArgs.useLocal || (!cliArgs.useOpenai && !cliArgs.useGoogle && defaultLlm == "local")
-    val useOpenai = cliArgs.useOpenai || (!cliArgs.useLocal && !cliArgs.useGoogle && defaultLlm == "openai")
-    val useGoogle = cliArgs.useGoogle || (!cliArgs.useLocal && !cliArgs.useOpenai && defaultLlm == "google")
+    val llmChoices = listOf(
+        LlmChoice("local", cliArgs.useLocal),
+        LlmChoice("openai", cliArgs.useOpenai),
+        LlmChoice("anthropic", cliArgs.useAnthropic),
+        LlmChoice("google", cliArgs.useGoogle)
+    )
+
+    val selectedLlm = llmChoices.find { it.isSelected }?.name ?: defaultLlm
+    val useLocal = selectedLlm == "local"
+    val useOpenai = selectedLlm == "openai"
+    val useAnthropic = selectedLlm == "anthropic"
+    val useGoogle = selectedLlm == "google"
     val isPlainPr = cliArgs.isPlainPr
     val isPr = cliArgs.isPr || isPlainPr
 
     val config = CommitConfig(
         useLocal,
         useOpenai,
+        useAnthropic,
         useGoogle,
         isPr,
         isPlainPr
