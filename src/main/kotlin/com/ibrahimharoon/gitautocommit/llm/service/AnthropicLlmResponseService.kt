@@ -1,4 +1,4 @@
-package com.ibrahimharoon.gitautocommit.services
+package com.ibrahimharoon.gitautocommit.llm.service
 
 import com.ibrahimharoon.gitautocommit.rest.dtos.AnthropicLlmResponseDto
 import org.springframework.http.HttpEntity
