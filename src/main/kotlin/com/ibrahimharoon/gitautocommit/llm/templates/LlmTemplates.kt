@@ -1,5 +1,20 @@
-package com.ibrahimharoon.gitautocommit.templates
+package com.ibrahimharoon.gitautocommit.llm.templates
 
+/**
+ * Internal class providing template strings and generation functions for LLM prompts.
+ *
+ * This class encapsulates the various prompts and instructions used when interacting
+ * with Language Models (LLMs) in the git-autocommit system. It includes templates
+ * for generating commit messages, PR summaries, and defining the LLM's role.
+ *
+ * The templates and functions in this class are designed to create consistent and
+ * effective prompts across different LLM providers, ensuring that the generated
+ * content (commit messages and PR summaries) follows the desired format and includes
+ * all necessary information.
+ *
+ * Usage of this class is internal to the git-autocommit system and its contents
+ * should not be directly exposed to external components or users.
+ */
 internal class LlmTemplates {
     companion object {
         const val ROLE =

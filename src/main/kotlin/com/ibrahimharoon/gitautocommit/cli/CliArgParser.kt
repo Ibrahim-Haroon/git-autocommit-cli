@@ -4,6 +4,27 @@ import kotlinx.cli.ArgParser
 import kotlinx.cli.ArgType
 import kotlinx.cli.default
 
+/**
+ * Represents the parsed command-line arguments.
+ *
+ * This data class encapsulates all possible command-line options. When adding new
+ * command-line arguments, extend this class with new properties.
+ *
+ * @property setDefault The default LLM response service to use.
+ * @property setOpenaiApiKey The OpenAI API key.
+ * @property setAnthropicApiKey The Anthropic API key.
+ * @property setGoogleVertexProjectId The Google Vertex project ID.
+ * @property setGoogleVertexLocation The Google Vertex location.
+ * @property useLocal Flag to use the local LLM response service.
+ * @property useOpenai Flag to use the OpenAI LLM response service.
+ * @property useAnthropic Flag to use the Anthropic LLM response service.
+ * @property useGoogle Flag to use the Google LLM response service.
+ * @property isPr Flag to create a PR summary.
+ * @property isPlainPr Flag to create a plain PR summary without GUI.
+ * @property isTest Flag to test if the CLI tool was installed correctly.
+ *
+ * Note: Add new properties here as new command-line arguments are introduced.
+ */
 data class CliArguments(
     val setDefault: String?,
     val setOpenaiApiKey: String?,
@@ -17,9 +38,27 @@ data class CliArguments(
     val isPr: Boolean,
     val isPlainPr: Boolean,
     val isTest: Boolean
+    // Add new properties for future arguments here
 )
 
+/**
+ * Parses command-line arguments for the git-autocommit application.
+ *
+ * This object is responsible for defining, parsing, and organizing command-line arguments.
+ * It uses the kotlinx.cli library to handle argument parsing and provides a structured
+ * way to access parsed arguments.
+ */
 object CliArgParser {
+
+    /**
+     * Parses the command-line arguments.
+     *
+     * This method sets up the argument parser, defines all possible arguments,
+     * parses the input, and returns a [CliArguments] object containing the parsed values.
+     *
+     * @param args The command-line arguments passed to the application.
+     * @return A [CliArguments] object containing the parsed argument values.
+     */
     fun parse(args: Array<String>): CliArguments {
         val parser = ArgParser("autocommit")
 

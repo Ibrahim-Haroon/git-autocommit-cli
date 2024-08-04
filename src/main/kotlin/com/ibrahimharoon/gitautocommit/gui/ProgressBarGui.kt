@@ -13,8 +13,29 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.concurrent.Executors
 
+/**
+ * Provides a visual indication of ongoing background activity.
+ *
+ * This object creates and manages a progress bar in the terminal to inform the user
+ * that an operation is in progress, particularly during potentially time-consuming
+ * background tasks such as LLM API calls. It doesn't represent actual progress,
+ * but rather serves as a "busy" indicator.
+ */
 object ProgressBarGui {
     private val logger: Logger = LoggerFactory.getLogger("ProgressBarGui")
+
+    /**
+     * Executes a given task while displaying an activity indicator.
+     *
+     * This method runs the provided task in a separate thread and displays an
+     * indeterminate progress bar in the terminal. The progress bar doesn't
+     * represent actual progress, but informs the user that the application
+     * is actively working on something.
+     *
+     * @param T The return type of the task.
+     * @param task A lambda function representing the background task to be executed.
+     * @return The result of the executed task.
+     */
     fun <T : Any> start(task: () -> T): T {
         val taskExecutorService = Executors.newSingleThreadExecutor()
 
@@ -30,7 +51,7 @@ object ProgressBarGui {
 
             val taskFuture = taskExecutorService.submit(task)
 
-            progress.update { total = totalTime }
+            progress.update { total = TOTAL_TIME }
             var elapsed = 0L
             while (!taskFuture.isDone) {
                 progress.advance(100)
@@ -38,9 +59,9 @@ object ProgressBarGui {
                 elapsed += 100
             }
 
-            if (elapsed >= timeout) {
+            if (elapsed >= TIMEOUT) {
                 taskFuture.cancel(true)
-                logger.warn("Task timed out after $timeout ms")
+                logger.warn("Task timed out after $TIMEOUT ms")
             }
 
             val result = taskFuture.get()
@@ -55,6 +76,15 @@ object ProgressBarGui {
         }
     }
 
-    private const val totalTime = 2_000L
-    private const val timeout = 2_0001L
+    /**
+     * The total animation time for the progress bar. (2 seconds)
+     * This doesn't represent actual task duration, but controls the animation cycle.
+     */
+    private const val TOTAL_TIME = 2_000L
+
+    /**
+     * The timeout duration for the task. (2.1 seconds)
+     * If the task exceeds this duration, it will be cancelled.
+     */
+    private const val TIMEOUT = 2_0001L
 }

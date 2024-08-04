@@ -5,9 +5,7 @@ import com.ibrahimharoon.gitautocommit.cli.CliConfigManager
 import com.ibrahimharoon.gitautocommit.core.SummaryOptions
 import com.ibrahimharoon.gitautocommit.git.GitChangesSummarizer
 import com.ibrahimharoon.gitautocommit.llm.LlmType
-import com.ibrahimharoon.gitautocommit.llm.registry.LlmRegistryStore
-import com.ibrahimharoon.gitautocommit.llm.registry.registerAnnotatedProviders
-import io.github.cdimascio.dotenv.Dotenv
+import com.ibrahimharoon.gitautocommit.llm.factory.LlmProviderFactory
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -51,14 +49,7 @@ fun main(args: Array<String>) {
         return
     }
 
-    registerAnnotatedProviders()
-
-    val dotenv = Dotenv.configure()
-        .directory(System.getProperty("user.home") + "/.local/bin")
-        .filename("autocommit-config.env")
-        .load()
-
-    val defaultLlm = dotenv["DEFAULT_LLM"] ?: "openai"
+    val defaultLlm = CliConfigManager["DEFAULT_LLM"]
     val selectedLlm = when {
         cliArgs.useLocal -> LlmType.LOCAL
         cliArgs.useOpenai -> LlmType.OPENAI
@@ -67,12 +58,12 @@ fun main(args: Array<String>) {
         else -> LlmType.valueOf(defaultLlm.uppercase())
     }
 
-    val llmProvider = LlmRegistryStore.getProvider(selectedLlm)
+    val llmProvider = LlmProviderFactory.getProvider(selectedLlm)
 
     val options = SummaryOptions(
         llmProvider = llmProvider,
         isPr = cliArgs.isPr || cliArgs.isPlainPr,
-        isPlainPr = cliArgs.isPlainPr
+        withGui = cliArgs.isPlainPr
     )
 
     logger.debug("Starting git changes summarization")

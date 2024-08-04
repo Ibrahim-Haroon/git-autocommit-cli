@@ -1,24 +1,17 @@
 package com.ibrahimharoon.gitautocommit.llm.provider
 
-import com.ibrahimharoon.gitautocommit.llm.LlmType
-import com.ibrahimharoon.gitautocommit.llm.registry.LlmRegistry
+import com.ibrahimharoon.gitautocommit.cli.CliConfigManager
 import com.ibrahimharoon.gitautocommit.llm.service.GoogleVertexLlmResponseService
 import com.ibrahimharoon.gitautocommit.llm.service.LlmResponseService
-import io.github.cdimascio.dotenv.Dotenv
 import org.springframework.http.HttpHeaders
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
-@LlmRegistry(LlmType.GOOGLE_VERTEX)
 class GoogleVertexLlmProvider : DefaultLlmProvider() {
     override val model = "gemini-1.5-flash"
 
-    private val dotenv = Dotenv.configure()
-        .directory(System.getProperty("user.home") + "/.local/bin")
-        .filename("autocommit-config.env")
-        .load()
-    private val PROJECT_ID = dotenv["GOOGLE_VERTEX_PROJECT_ID"]
-    private val LOCATION = dotenv["GOOGLE_VERTEX_LOCATION"]
+    private val PROJECT_ID = CliConfigManager["GOOGLE_VERTEX_PROJECT_ID"]
+    private val LOCATION = CliConfigManager["GOOGLE_VERTEX_LOCATION"]
 
     override val url = "https://us-central1-aiplatform.googleapis.com/v1/projects/$PROJECT_ID/locations/$LOCATION/publishers/google/models/$model:generateContent"
 
