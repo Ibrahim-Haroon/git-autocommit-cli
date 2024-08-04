@@ -1,12 +1,9 @@
 package com.ibrahimharoon.gitautocommit.llm.provider
 
-import com.ibrahimharoon.gitautocommit.llm.LlmType
-import com.ibrahimharoon.gitautocommit.llm.registry.LlmRegistry
 import com.ibrahimharoon.gitautocommit.llm.service.DefaultLlmResponseService
 import com.ibrahimharoon.gitautocommit.llm.service.LlmResponseService
 import org.springframework.http.HttpHeaders
 
-@LlmRegistry(LlmType.LOCAL)
 class LocalLlmProvider : DefaultLlmProvider() {
     override val model = "llama-2-13b-chat.Q4_K_M.gguf"
     override val url = "http://localhost:8080/v1/chat/completions"

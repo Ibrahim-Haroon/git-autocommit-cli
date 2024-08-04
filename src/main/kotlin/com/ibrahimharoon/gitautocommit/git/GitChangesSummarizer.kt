@@ -8,11 +8,26 @@ import org.slf4j.LoggerFactory
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 
+/**
+ * Object responsible for summarizing git changes, generating commit messages or PR summaries.
+ *
+ * This object handles the core functionality of generating, reviewing, and applying summaries
+ * for git changes, whether they are commit messages or PR summaries. It interacts with the LLM provider,
+ * user interface components, and git commands to complete the summarization process.
+ */
 object GitChangesSummarizer {
     private val logger = LoggerFactory.getLogger(GitChangesSummarizer::class.java)
 
+    /**
+     * Summarizes git changes based on the provided options.
+     *
+     * This method orchestrates the entire process of generating a summary, including user interaction
+     * if required, and applying the summary (either as a commit message or PR summary).
+     *
+     * @param options The [SummaryOptions] containing configuration for the summarization process.
+     */
     fun summarizeChanges(options: SummaryOptions) {
-        if (options.isPlainPr) {
+        if (options.withGui) {
             val message = generateMessage(options, withGui = false)
             println(message)
             return
@@ -26,7 +41,7 @@ object GitChangesSummarizer {
         }
 
         val terminalInteraction = TerminalGui(
-            messageTitlePrefix = if (options.isPr) "Generated PR summary:" else "Generated commit message:",
+            messageTitle = if (options.isPr) "Generated PR summary:" else "Generated commit message:",
             promptMessage = if (options.isPr) "Use this PR summary?" else "Use this commit message?",
             initialMessage = message,
             options = options
@@ -46,6 +61,16 @@ object GitChangesSummarizer {
         }
     }
 
+    /**
+     * Generates a message summarizing git changes.
+     *
+     * This method retrieves git data (either diff or log), and uses the LLM provider to generate
+     * a summary. It can optionally display a progress bar during the generation process.
+     *
+     * @param options The [SummaryOptions] containing configuration for the summarization process.
+     * @param withGui Whether to display a progress bar during message generation.
+     * @return The generated summary message as a string.
+     */
     fun generateMessage(options: SummaryOptions, withGui: Boolean = true): String {
         val gitData = if (options.isPr) GitService.getGitLog() else GitService.getGitDiff()
 
@@ -65,13 +90,30 @@ object GitChangesSummarizer {
         }
     }
 
-    private fun handlePrMessage(message: String, terminalInteraction: TerminalGui) {
+    /**
+     * Handles the process of finalizing a PR summary.
+     *
+     * This method copies the PR summary to the clipboard and notifies the user.
+     *
+     * @param message The PR summary message.
+     * @param terminalGui The [TerminalGui] instance for user interaction.
+     */
+    private fun handlePrMessage(message: String, terminalGui: TerminalGui) {
         copyToClipboard(message)
-        terminalInteraction.terminal().println("PR summary generated successfully")
-        terminalInteraction.terminal().println(TextColors.yellow("Copied to clipboard!"))
+        terminalGui.terminal().println("PR summary generated successfully")
+        terminalGui.terminal().println(TextColors.yellow("Copied to clipboard!"))
     }
 
-    private fun handleCommitMessage(message: String, terminalInteraction: TerminalGui) {
+    /**
+     * Handles the process of creating a git commit with the generated message.
+     *
+     * This method executes the git commit command with the provided message, handles any errors,
+     * and notifies the user of the result.
+     *
+     * @param message The commit message.
+     * @param terminalGui The [TerminalGui] instance for user interaction.
+     */
+    private fun handleCommitMessage(message: String, terminalGui: TerminalGui) {
         try {
             val processBuilder = ProcessBuilder("git", "commit", "-m", message)
             processBuilder.inheritIO()
@@ -84,7 +126,7 @@ object GitChangesSummarizer {
                 logger.error("Error executing git commit command: $errorStream")
             } else {
                 copyToClipboard(message)
-                terminalInteraction.terminal().println("Commit successful. Message copied to clipboard!")
+                terminalGui.terminal().println("Commit successful. Message copied to clipboard!")
                 logger.debug("Commit successful")
             }
         } catch (e: Exception) {
@@ -92,6 +134,11 @@ object GitChangesSummarizer {
         }
     }
 
+    /**
+     * Copies the provided text to the system clipboard.
+     *
+     * @param text The text to be copied to the clipboard.
+     */
     private fun copyToClipboard(text: String) {
         val selection = StringSelection(text)
         val clipboard = Toolkit.getDefaultToolkit().systemClipboard
