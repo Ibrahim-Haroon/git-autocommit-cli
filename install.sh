@@ -1,7 +1,7 @@
 #!/bin/bash
 
 GITHUB_REPO="Ibrahim-Haroon/git-autocommit-cli"
-JAR_NAME="git-auto-commit-cli.jar"
+JAR_NAME="git-autocommit-cli.jar"
 
 main() {
   detect_os

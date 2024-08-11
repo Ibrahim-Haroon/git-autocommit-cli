@@ -1,5 +1,5 @@
 $GITHUB_REPO = "Ibrahim-Haroon/git-autocommit-cli"
-$JAR_NAME = "git-auto-commit-cli.jar"
+$JAR_NAME = "git-autocommit-cli.jar"
 $INSTALL_DIR = "$HOME\bin"
 $SHELL_CONFIG = $PROFILE
 
