@@ -1,4 +1,4 @@
-rootProject.name = "git-auto-commit-cli"
+rootProject.name = "git-autocommit-cli"
 
 pluginManagement {
     repositories {
