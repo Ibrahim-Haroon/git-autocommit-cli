@@ -31,7 +31,7 @@ AutoCommit is a powerful CLI tool that leverages AI to generate meaningful commi
 
 1. Clone the repository
    ```shell
-   git clone https://github.com/Ibrahim-Haroon/git-autocommit-cli.git
+   git clone -b install https://github.com/Ibrahim-Haroon/git-autocommit-cli.git
    ```
 
 2. Run the install script
@@ -67,7 +67,7 @@ AutoCommit is a powerful CLI tool that leverages AI to generate meaningful commi
      ```
    - Append the export path to your shell configuration file:
      ```shell
-     echo 'export PATH=$PATH:/path/to/autocommit' >> ~/.bashrc   # or ~/.zshrc for zsh users
+     echo 'export PATH=$PATH:/path/to/autocommit' >> ~/.zshrc   # or ~/.bashrc for bash users
      ```
 
 5. Verify installation
@@ -142,12 +142,14 @@ autocommit --help
 
 ```
 Options: 
-    --set-default, -d -> Set the default LLM response service { Value should be one of [local, openai, google] }
+    --set-default, -d -> Set the default LLM response service { Value should be one of [local, openai, google, anthropic] }
     --set-openai-key -> Set OpenAI API key { String }
+    --set-anthropic-key -> Set the anthropic API key { String }
     --set-google-vertex-project-id, -vertex-project-id -> Set the Google vertex project ID { String }
     --set-google-vertex-location, -vertex-location -> Set the Google vertex location { String }
     --local, -l [false] -> Use Local LLM response service 
     --openai, -o [false] -> Use OpenAI LLM response service 
+    --anthropic, -a [false] -> Use Anthropic LLM response service 
     --google, -g [false] -> Use Google LLM response service 
     --make-pr-summary, -pr [false] -> Create a summary based off git log for PR message 
     --plain-pr, -plain-pr [false] -> Create a summary based off git log for PR message without GUI 
@@ -176,6 +178,6 @@ We welcome contributions to this project! Here's how you can help:
 3. 🛠️ Make your changes
 4. 🎉 Submit a pull request
 
-> Please ensure your code adheres to our style guide.
+> Please ensure your code has kdocs and intuitive naming conventions.
 
 ---
