@@ -15,17 +15,13 @@
 <div align="center">
   <a href="#-installation">Installation</a> •
   <a href="#-features">Features</a> •
-  <a href="#-usage">Usage</a> •
+  <a href="#️-usage">Usage</a> •
   <a href="#-contributing">Contributing</a>
 </div>
 <br>
 <div align="center">
-  <video width="100%" controls>
-    <source src="autocommit-demo.mp4" type="video/mp4">
-    Your browser does not support the video tag.
-  </video>
+  <img src="autocommit-demo.gif" alt="AutoCommit Demo" width="100%">
 </div>
-
 ---
 
 ## 🌟 Features
