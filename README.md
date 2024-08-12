@@ -7,10 +7,23 @@
 [![build](https://github.com/Ibrahim-Haroon/git-autocommit-cli/actions/workflows/build.yaml/badge.svg)](https://github.com/Ibrahim-Haroon/git-autocommit-cli/actions/workflows/build.yaml)
 [![GitHub Release](https://img.shields.io/github/v/release/Ibrahim-Haroon/git-autocommit-cli?include_prereleases&sort=semver&style=flat-square&logo=github)](https://github.com/Ibrahim-Haroon/git-autocommit-cli/releases)
 
-AutoCommit is a powerful CLI tool that leverages AI to generate meaningful commit and PR messages to save you time!
-
-[Installation](#-installation) • [Features](#-features) • [Usage](#️-usage) • [Contributing](#-contributing)
-
+</div>
+<div align="center">
+  <strong>AutoCommit is a powerful CLI tool that leverages AI to generate meaningful commit and PR messages to save you time!</strong>
+</div>
+<br>
+<div align="center">
+  <a href="#-installation">Installation</a> •
+  <a href="#-features">Features</a> •
+  <a href="#-usage">Usage</a> •
+  <a href="#-contributing">Contributing</a>
+</div>
+<br>
+<div align="center">
+  <video width="100%" controls>
+    <source src="autocommit-demo.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
 </div>
 
 ---
@@ -31,7 +44,7 @@ AutoCommit is a powerful CLI tool that leverages AI to generate meaningful commi
 
 1. Clone the repository
    ```shell
-   git clone -b install_branch https://github.com/Ibrahim-Haroon/git-autocommit-cli.git
+   git clone -b install https://github.com/Ibrahim-Haroon/git-autocommit-cli.git
    ```
 
 2. Run the install script
