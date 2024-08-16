@@ -1,4 +1,4 @@
-package com.ibrahimharoon.gitautocommit.llm.templates
+package com.ukg.gitautocommit.llm.templates
 
 /**
  * Internal class providing template strings and generation functions for LLM prompts.
@@ -19,39 +19,85 @@ internal class LlmTemplates {
     companion object {
         const val ROLE =
             """
-            You are a Git Commit and PR Summary Assistant. Your primary task is to generate clear, concise, and
-            informative commit messages and PR summaries based on git diffs and git logs. Your outputs should help
-            developers understand the changes made without being overly verbose or too brief. Follow best practices
-            for both commit messages and PR summaries, ensuring clarity and relevance.
+            You are an expert Git user and software developer tasked with generating high-quality, consistent
+            commit messages based on git diffs or PR summaries based on git logs. Your goal is to create informative,
+            concise, and well-structured commit messages that accurately reflect the changes made in the code.
             """
 
-        fun commitPrompt(codeChanges: String): String =
+        fun commitPrompt(gitDiff: String, previousConversations: String): String =
             """
-            You are provided with a git diff representing the changes made in the code. This will be pasted 
-            directly into the commit message, so don't add weird characters. Use direct names for variables,
-            functions, classes, etc. Pay careful attention for any accidental secret messages, such as API keys
-            and notify in the commit message so the user can see before commiting. 
+            Analyze the provided git diff and generate a single, unified commit message that captures the essence of
+            all changes across multiple files. Focus on common themes, significant changes, and relationships between
+            modifications in different files.
             
-            You will be provided the following information:
-                <codeChanges>
-                {{$codeChanges}}
-                </codeChanges>
-                
-            1. For minor changes like linting or small logic updates, generate a concise message under
-               50 characters.
-            2. For more complex changes involving multiple files or significant updates, generate a 
-              detailed message with the following sections:
-                    - A short summary of the changes.
-                    - Bullet points describing each sub change.
+            Guidelines for Commit Message Generation:
+            
+            1. Structure:
+               - Start with a type prefix (feat/fix/dependency/docs/style/refactor/perf/test) followed by an optional 
+                 scope in parentheses.
+               - After the prefix, add a colon and a space, then a brief title (50 characters or less).
+               - If needed, add a blank line followed by a more detailed description using bullet points.
+            
+            2. Content:
+               - Provide a high-level summary encompassing changes across all files.
+               - Be specific, using direct names for variables, functions, classes, etc.
+               - Mention the purpose or impact of the changes, not just what was changed.
+               - Include a warning for any potential security issues (e.g., exposed API keys).
+            
+            3. Length and Detail:
+               - Minor changes: Use a single-line message.
+               - Moderate changes: Use a title and 1-2 bullet points.
+               - Major changes: Use a title and 3-5 bullet points.
+               - Adjust detail based on the significance and complexity of the changes.
+            
+            4. Style:
+               - Use present tense and imperative mood (e.g., "Add feature" not "Added feature").
+               - Be concise but informative.
+            
+            5. Avoid:
+               - Do not mention individual files or write separate commit messages per file.
+               - Do not include any introductory or explanatory text.
+            
+            Example:
+            
+            ```
+            feat(auth): Implement OAuth2 authentication
+            
+            - Add OAuth2 provider integration in AuthService
+            - Update user model to include OAuth2 tokens
+            - Implement token refresh mechanism in AuthMiddleware
+            ```
+            
+            Input:
+            
+            <git_diff>
+            {{$gitDiff}}
+            </git_diff>
+            
+            <previous_conversations>
+            {{$previousConversations}}
+            </previous_conversations>
+            
+            Generate the commit message based on the provided git diff and previous conversations (if any). Ensure the
+            output consists solely of the commit message, without any additional text or explanations.
+            
+            !!!IMPORTANT: NEVER RE-OUTPUT ANY OF THE ABOVE IN THE COMMIT MESSAGE!!!
             """
 
-        fun prSummaryPrompt(gitLog: String): String =
+        fun prSummaryPrompt(gitLog: String, previousConversations: String): String =
             """
             You will provided the following information:
                 <gitLog>
                 {{$gitLog}}
                 </gitLog>
-                
+              
+            This may be a subsequent retry in which the first generated commit message did not meet the user's 
+            expectations. Carefully analyze the previous conversations (if any) and follow what the user wanted:
+            
+            <previous_conversations>
+            {{$previousConversations}}
+            </previous_conversations>
+            
             Generate a PR summary that follows best practices, providing a clear and comprehensive overview of 
             the changes introduced. This will be pasted directly into PR conversation tab in Github. Use direct names
             for variables, functions, classes, etc. The format should follow the structure below, ensuring each point
