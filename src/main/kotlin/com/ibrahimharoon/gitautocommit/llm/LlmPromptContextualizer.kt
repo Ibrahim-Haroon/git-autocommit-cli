@@ -1,8 +1,8 @@
-package com.ibrahimharoon.gitautocommit.llm
+package com.ukg.gitautocommit.llm
 
-import com.ibrahimharoon.gitautocommit.cache.RegenConversationCache
-import com.ibrahimharoon.gitautocommit.llm.templates.LlmTemplates.Companion.commitPrompt
-import com.ibrahimharoon.gitautocommit.llm.templates.LlmTemplates.Companion.prSummaryPrompt
+import com.ukg.gitautocommit.cache.RegenConversationCache
+import com.ukg.gitautocommit.llm.templates.LlmTemplates.Companion.commitPrompt
+import com.ukg.gitautocommit.llm.templates.LlmTemplates.Companion.prSummaryPrompt
 
 /**
  * Object responsible for contextualizing prompts for Language Model (LLM) interactions.
@@ -29,10 +29,9 @@ object LlmPromptContextualizer {
      * @return A string containing the contextualized prompt for the LLM.
      */
     fun generate(gitData: String, isPr: Boolean): String {
-        var prompt = ""
-        prompt += if (isPr) prSummaryPrompt(gitData) else commitPrompt(gitData)
-        prompt += if (conversationCache.isNotEmpty()) "Previous history: $conversationCache" else ""
-
-        return prompt
+        if (isPr) {
+            return prSummaryPrompt(gitData, conversationCache.toString())
+        }
+        return commitPrompt(gitData, conversationCache.toString())
     }
 }
