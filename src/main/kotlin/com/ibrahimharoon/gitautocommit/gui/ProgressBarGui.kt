@@ -22,7 +22,7 @@ import java.util.concurrent.Executors
  * but rather serves as a "busy" indicator.
  */
 object ProgressBarGui {
-    private val logger: Logger = LoggerFactory.getLogger("ProgressBarGui")
+    private val logger: Logger = LoggerFactory.getLogger(this::class.java.simpleName)
 
     /**
      * Executes a given task while displaying an activity indicator.

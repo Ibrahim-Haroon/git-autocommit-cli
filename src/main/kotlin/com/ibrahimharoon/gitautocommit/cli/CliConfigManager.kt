@@ -13,7 +13,7 @@ import java.util.Properties
  * such as API keys, default LLM service, and other configurable options.
  */
 object CliConfigManager {
-    private val logger: Logger = LoggerFactory.getLogger("Main")
+    private val logger: Logger = LoggerFactory.getLogger(this::class.java.simpleName)
     private val CONFIG_FILE_NAME = System.getProperty("user.home") + "/.local/bin/autocommit-config.env"
     private val configFile = File(CONFIG_FILE_NAME)
     private val properties = Properties()
