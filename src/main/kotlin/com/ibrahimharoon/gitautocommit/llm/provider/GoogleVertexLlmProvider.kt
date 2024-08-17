@@ -3,9 +3,11 @@ package com.ibrahimharoon.gitautocommit.llm.provider
 import com.ibrahimharoon.gitautocommit.cli.CliConfigManager
 import com.ibrahimharoon.gitautocommit.llm.service.GoogleVertexLlmResponseService
 import com.ibrahimharoon.gitautocommit.llm.service.LlmResponseService
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpHeaders
 import java.io.BufferedReader
 import java.io.InputStreamReader
+import kotlin.system.exitProcess
 
 class GoogleVertexLlmProvider : DefaultLlmProvider() {
     override val model = "gemini-1.5-flash"
@@ -34,8 +36,12 @@ class GoogleVertexLlmProvider : DefaultLlmProvider() {
             reader.close()
             result
         } catch (e: Exception) {
-            e.printStackTrace()
-            ""
+            logger.error("Unable to retrieve access token", e)
+            exitProcess(1)
         }
+    }
+
+    companion object {
+        private val logger = LoggerFactory.getLogger(this::class.java.simpleName)
     }
 }

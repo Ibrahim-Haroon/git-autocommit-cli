@@ -16,7 +16,7 @@ import java.io.File
  * user interface components, and git commands to complete the summarization process.
  */
 object GitChangesSummarizer {
-    private val logger = LoggerFactory.getLogger(GitChangesSummarizer::class.java)
+    private val logger = LoggerFactory.getLogger(this::class.java.simpleName)
 
     /**
      * Summarizes git changes based on the provided options.

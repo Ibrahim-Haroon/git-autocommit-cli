@@ -3,6 +3,7 @@ package com.ibrahimharoon.gitautocommit.llm.provider
 import com.ibrahimharoon.gitautocommit.llm.LlmPromptContextualizer
 import com.ibrahimharoon.gitautocommit.llm.templates.LlmTemplates
 import org.slf4j.LoggerFactory
+import kotlin.system.exitProcess
 
 /**
  * Provides a default implementation of the LlmProvider interface.
@@ -15,7 +16,7 @@ abstract class DefaultLlmProvider : LlmProvider {
     /**
      * Logger instance for this class.
      */
-    private val logger = LoggerFactory.getLogger(this::class.java)
+    private val logger = LoggerFactory.getLogger(this::class.java.simpleName)
 
     /**
      * Generates a message based on the provided git data.
@@ -36,8 +37,8 @@ abstract class DefaultLlmProvider : LlmProvider {
             val prompt = LlmPromptContextualizer.generate(gitData, isPr)
             responseService.response(LlmTemplates.ROLE, prompt)
         } catch (e: Exception) {
-            logger.error("Error generating message", e)
-            "Error generating ${this::class.simpleName} message - make sure your API key is valid/set"
+            logger.error("Error generating ${this::class.simpleName} message - make sure your API key is valid/set")
+            exitProcess(1)
         }
     }
 }
