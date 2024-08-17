@@ -1,4 +1,4 @@
-package com.ukg.gitautocommit.llm.templates
+package com.ibrahimharoon.gitautocommit.llm.templates
 
 /**
  * Internal class providing template strings and generation functions for LLM prompts.

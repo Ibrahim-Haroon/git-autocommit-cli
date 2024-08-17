@@ -1,8 +1,8 @@
-package com.ukg.gitautocommit.llm
+package com.ibrahimharoon.gitautocommit.llm
 
-import com.ukg.gitautocommit.cache.RegenConversationCache
-import com.ukg.gitautocommit.llm.templates.LlmTemplates.Companion.commitPrompt
-import com.ukg.gitautocommit.llm.templates.LlmTemplates.Companion.prSummaryPrompt
+import com.ibrahimharoon.gitautocommit.cache.RegenConversationCache
+import com.ibrahimharoon.gitautocommit.llm.templates.LlmTemplates.Companion.commitPrompt
+import com.ibrahimharoon.gitautocommit.llm.templates.LlmTemplates.Companion.prSummaryPrompt
 
 /**
  * Object responsible for contextualizing prompts for Language Model (LLM) interactions.
