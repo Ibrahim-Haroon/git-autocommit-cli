@@ -11,11 +11,12 @@ import kotlin.system.exitProcess
 
 class GoogleVertexLlmProvider : DefaultLlmProvider() {
     override val model = "gemini-1.5-flash"
+    private val baseUrl = "https://us-central1-aiplatform.googleapis.com/v1/projects"
+    private val projectId = CliConfigManager["GOOGLE_VERTEX_PROJECT_ID"]
+    private val location = CliConfigManager["GOOGLE_VERTEX_LOCATION"]
+    private val responseType = ":generateContent"
 
-    private val PROJECT_ID = CliConfigManager["GOOGLE_VERTEX_PROJECT_ID"]
-    private val LOCATION = CliConfigManager["GOOGLE_VERTEX_LOCATION"]
-
-    override val url = "https://us-central1-aiplatform.googleapis.com/v1/projects/$PROJECT_ID/locations/$LOCATION/publishers/google/models/$model:generateContent"
+    override val url = "$baseUrl/$projectId/locations/$location/publishers/google/models/$model:$responseType"
 
     private val headers = HttpHeaders().apply {
         set("Content-Type", "application/json")
