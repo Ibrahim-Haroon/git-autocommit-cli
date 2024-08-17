@@ -43,8 +43,6 @@ class GoogleVertexLlmResponseService(
             Map::class.java
         )
 
-        println(response.body)
-
         return response.body?.candidates?.firstOrNull()?.content?.parts?.firstOrNull()?.text
             ?: throw IllegalStateException("No content found in the response")
     }
