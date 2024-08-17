@@ -37,7 +37,7 @@ abstract class DefaultLlmProvider : LlmProvider {
             val prompt = LlmPromptContextualizer.generate(gitData, isPr)
             responseService.response(LlmTemplates.ROLE, prompt)
         } catch (e: Exception) {
-            logger.error("Error generating ${this::class.simpleName} message - make sure your API key is valid/set")
+            logger.error("Error generating ${this::class.simpleName} message - $e")
             exitProcess(1)
         }
     }

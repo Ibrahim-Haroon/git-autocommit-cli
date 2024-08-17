@@ -7,6 +7,7 @@ import com.ibrahimharoon.gitautocommit.gui.ProgressBarGui
 import com.ibrahimharoon.gitautocommit.gui.TerminalGui
 import org.slf4j.LoggerFactory
 import java.io.File
+import kotlin.system.exitProcess
 
 /**
  * Object responsible for summarizing git changes, generating commit messages or PR summaries.
@@ -130,12 +131,14 @@ object GitChangesSummarizer {
             if (exitCode != 0) {
                 val errorStream = process.errorStream.bufferedReader().readText()
                 logger.error("Error executing git commit command: $errorStream")
+                exitProcess(1)
             } else {
                 terminalGui.terminal().println(TextColors.yellow("Commit successful!"))
                 logger.debug("Commit successful")
             }
         } catch (e: Exception) {
             logger.error("Exception during git commit: ${e.message}")
+            exitProcess(1)
         }
     }
 }
