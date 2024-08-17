@@ -12,6 +12,7 @@ import com.github.ajalt.mordant.widgets.progress.speed
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.concurrent.Executors
+import kotlin.system.exitProcess
 
 /**
  * Provides a visual indication of ongoing background activity.
@@ -69,7 +70,7 @@ object ProgressBarGui {
             return result
         } catch (e: Exception) {
             logger.error("Error while generating commit message", e)
-            throw e
+            exitProcess(1)
         } finally {
             taskExecutorService.shutdown()
         }
