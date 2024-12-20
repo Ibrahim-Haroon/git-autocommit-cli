@@ -5,6 +5,8 @@ import com.ibrahimharoon.gitautocommit.cli.TerminalService
 import com.ibrahimharoon.gitautocommit.core.SummaryOptions
 import com.ibrahimharoon.gitautocommit.gui.ProgressBarGui
 import com.ibrahimharoon.gitautocommit.gui.TerminalGui
+import com.ibrahimharoon.gitautocommit.llm.memory.ConversationMemory
+import com.ibrahimharoon.gitautocommit.llm.model.LlmMessage
 import org.slf4j.LoggerFactory
 import java.io.File
 import kotlin.system.exitProcess
@@ -29,7 +31,7 @@ object GitChangesSummarizer {
      */
     fun summarizeChanges(options: SummaryOptions) {
         if (!options.withGui) {
-            val message = generateMessage(options, withGui = false)
+            val message = generateMessage(options)
 
             if (System.getenv().containsKey("IS_WORKFLOW")) {
                 File("pr_summary.txt").writeText(message)
@@ -41,6 +43,12 @@ object GitChangesSummarizer {
         }
 
         var message = generateMessage(options)
+        ConversationMemory.add(
+            LlmMessage(
+                role = LlmMessage.Role.Assistant,
+                content = message
+            )
+        )
 
         if (message.isEmpty()) {
             logger.info("Failed to generate a message. Exiting.")
@@ -75,10 +83,9 @@ object GitChangesSummarizer {
      * a summary. It can optionally display a progress bar during the generation process.
      *
      * @param options The [SummaryOptions] containing configuration for the summarization process.
-     * @param withGui Whether to display a progress bar during message generation.
      * @return The generated summary message as a string.
      */
-    fun generateMessage(options: SummaryOptions, withGui: Boolean = true): String {
+    fun generateMessage(options: SummaryOptions): String {
         val gitData = if (options.isPr) GitService.getGitLog() else GitService.getGitDiff()
 
         if (gitData.isEmpty()) {
@@ -88,7 +95,7 @@ object GitChangesSummarizer {
 
         logger.debug("Got git data successfully: {}", gitData)
 
-        return if (withGui) {
+        return if (options.withGui) {
             ProgressBarGui.start {
                 options.llmProvider.getMessage(gitData, options.isPr)
             }
