@@ -4,6 +4,8 @@ import com.ibrahimharoon.gitautocommit.llm.LlmPromptContextualizer
 import com.ibrahimharoon.gitautocommit.llm.memory.ConversationMemory
 import com.ibrahimharoon.gitautocommit.llm.templates.LlmTemplates
 import org.slf4j.LoggerFactory
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 import kotlin.system.exitProcess
 
 /**
@@ -13,10 +15,7 @@ import kotlin.system.exitProcess
  * handling common functionality such as logging and error handling.
  */
 abstract class DefaultLlmProvider : LlmProvider {
-
-    /**
-     * Logger instance for this class.
-     */
+    private val lock = ReentrantLock()
     private val logger = LoggerFactory.getLogger(this::class.java.simpleName)
 
     /**
@@ -32,7 +31,7 @@ abstract class DefaultLlmProvider : LlmProvider {
      * @param isPr A boolean indicating whether to generate a PR summary (true) or a commit message (false).
      * @return A string containing the generated message, or an error message if generation fails.
      */
-    override fun getMessage(gitData: String, isPr: Boolean): String {
+    override fun getMessage(gitData: String, isPr: Boolean): String = lock.withLock {
         return try {
             logger.debug("Using ${this::class.simpleName} to generate ${if (isPr) "PR summary" else "commit message"}")
             val prompt = LlmPromptContextualizer.generate(gitData, isPr)
