@@ -4,8 +4,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.util.Properties
-import java.util.concurrent.locks.ReentrantLock
-import kotlin.concurrent.withLock
 
 /**
  * Manages the configuration for the git-autocommit CLI tool.
@@ -15,27 +13,24 @@ import kotlin.concurrent.withLock
  * such as API keys, default LLM service, and other configurable options.
  */
 object CliConfigManager {
-    private val lock = ReentrantLock()
     private val logger: Logger = LoggerFactory.getLogger(this::class.java.simpleName)
     private val CONFIG_FILE_NAME = System.getProperty("user.home") + "/.local/bin/autocommit-config.env"
     private val configFile = File(CONFIG_FILE_NAME)
     private val properties = Properties()
 
     init {
-        lock.withLock {
-            if (!configFile.exists()) {
-                configFile.parentFile.mkdirs()
-                configFile.createNewFile()
-            }
-            properties.load(configFile.inputStream())
+        if (!configFile.exists()) {
+            configFile.parentFile.mkdirs()
+            configFile.createNewFile()
         }
+        properties.load(configFile.inputStream())
     }
 
     /**
      * Creates the configuration file if it doesn't exist.
      * This method ensures that the configuration file is available for use.
      */
-    fun createConfigIfNotExists() { lock.withLock { return } }
+    fun createConfigIfNotExists() { return }
 
     /**
      * Retrieves a configuration value.
@@ -43,7 +38,7 @@ object CliConfigManager {
      * @param key The key of the configuration value to retrieve.
      * @return The value associated with the given key, or null if not found.
      */
-    operator fun get(key: String): String = lock.withLock {
+    operator fun get(key: String): String {
         val `val` = properties.getProperty(key)
         if (`val` == null) {
             logger.error("Couldn't find $key in $properties")
@@ -53,27 +48,27 @@ object CliConfigManager {
         return `val`
     }
 
-    fun setDefaultLlmService(llm: String) = lock.withLock {
+    fun setDefaultLlmService(llm: String) {
         properties.setProperty("DEFAULT_LLM", llm)
         properties.store(configFile.outputStream(), null)
     }
 
-    fun setOpenaiApiKey(apiKey: String) = lock.withLock {
+    fun setOpenaiApiKey(apiKey: String) {
         properties.setProperty("OPENAI_API_KEY", apiKey)
         properties.store(configFile.outputStream(), null)
     }
 
-    fun setAnthropicApiKey(apiKey: String) = lock.withLock {
+    fun setAnthropicApiKey(apiKey: String) {
         properties.setProperty("ANTHROPIC_API_KEY", apiKey)
         properties.store(configFile.outputStream(), null)
     }
 
-    fun setGoogleVertexProjectId(googleVertexProjectId: String) = lock.withLock {
+    fun setGoogleVertexProjectId(googleVertexProjectId: String) {
         properties.setProperty("GOOGLE_VERTEX_PROJECT_ID", googleVertexProjectId)
         properties.store(configFile.outputStream(), null)
     }
 
-    fun setGoogleVertexLocation(googleVertexLocation: String) = lock.withLock {
+    fun setGoogleVertexLocation(googleVertexLocation: String) {
         properties.setProperty("GOOGLE_VERTEX_LOCATION", googleVertexLocation)
         properties.store(configFile.outputStream(), null)
     }
