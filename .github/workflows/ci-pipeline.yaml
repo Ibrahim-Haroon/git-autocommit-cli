@@ -83,8 +83,19 @@ jobs:
             new_version="${{ github.event.inputs.version }}"
           else
             IFS='.' read -r major minor patch <<< "$current_version"
-            new_patch=$((patch + 1))
-            new_version="$major.$minor.$new_patch"
+            if [ "$minor" -ge "9" ] && [ "$patch" -ge "9" ]; then
+              new_major=$((major + 1))
+              new_minor=0
+              new_patch=0
+              new_version="$new_major.$new_minor.$new_patch"
+            elif [ "$patch" -ge "9" ]; then
+              new_minor=$((minor + 1))
+              new_patch=0
+              new_version="$major.$new_minor.$new_patch"
+            else
+              new_patch=$((patch + 1))
+              new_version="$major.$minor.$new_patch"
+            fi
           fi
           echo "New version: $new_version"
           echo "new_version=$new_version" >> $GITHUB_OUTPUT
@@ -97,7 +108,7 @@ jobs:
           git push origin HEAD:main
 
       - name: Download build artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: autocommit
           path: ./build/libs
