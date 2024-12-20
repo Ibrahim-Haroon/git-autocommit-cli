@@ -96,6 +96,7 @@
 <tr>
 <th>Local LLM model</th>
 <th>OpenAI model</th>
+<th>Anthropic model</th>
 <th>Google Vertex AI model</th>
 </tr>
 <tr>
@@ -121,6 +122,19 @@ autocommit --set-openai-key <api-key>
 </td>
 <td>
 
+```shell
+autocommit --anthropic
+```
+
+Requires Anthropic API key:
+```shell
+autocommit --set-anthropic-key <api-key>
+```
+[Get API key here](https://console.anthropic.com/settings/keys)
+
+</td>
+<td>
+
 Set Project Id and Location:
 ```shell
 autocommit --set-google-vertex-project-id YOUR_PROJECT_ID
@@ -138,7 +152,7 @@ autocommit --google
 
 ### Set default settings
 ```shell
-autocommit --set-default <google/local/openai>
+autocommit --set-default <google/local/openai/anthropic>
 ```
 
 ### See all available commands
@@ -156,14 +170,15 @@ Options:
     --set-anthropic-key -> Set the anthropic API key { String }
     --set-google-vertex-project-id, -vertex-project-id -> Set the Google vertex project ID { String }
     --set-google-vertex-location, -vertex-location -> Set the Google vertex location { String }
-    --local, -l [false] -> Use Local LLM response service 
-    --openai, -o [false] -> Use OpenAI LLM response service 
-    --anthropic, -a [false] -> Use Anthropic LLM response service 
-    --google, -g [false] -> Use Google LLM response service 
-    --make-pr-summary, -pr [false] -> Create a summary based off git log for PR message 
-    --plain-pr, -plain-pr [false] -> Create a summary based off git log for PR message without GUI 
-    --test, -t [false] -> Test CLI tool was installed correctly 
-    --help, -h -> Usage info 
+    --local, -l [false] -> Use Local LLM response service
+    --openai, -o [false] -> Use OpenAI LLM response service
+    --anthropic, -a [false] -> Use Anthropic LLM response service
+    --google, -g [false] -> Use Google LLM response service
+    --make-pr-summary, -pr [false] -> Create a summary based off git log for PR message
+    --plain-pr, -plain-pr [false] -> Create a summary based off git log for PR message without GUI
+    --test, -t [false] -> Test CLI tool was installed correctly
+    --version, -v [false] -> Show the version of the tool
+    --help, -h -> Usage info
 ```
 
 </details>
