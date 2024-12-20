@@ -1,6 +1,7 @@
 package com.ibrahimharoon.gitautocommit.llm.provider
 
 import com.ibrahimharoon.gitautocommit.llm.LlmPromptContextualizer
+import com.ibrahimharoon.gitautocommit.llm.memory.ConversationMemory
 import com.ibrahimharoon.gitautocommit.llm.templates.LlmTemplates
 import org.slf4j.LoggerFactory
 import kotlin.system.exitProcess
@@ -35,7 +36,7 @@ abstract class DefaultLlmProvider : LlmProvider {
         return try {
             logger.debug("Using ${this::class.simpleName} to generate ${if (isPr) "PR summary" else "commit message"}")
             val prompt = LlmPromptContextualizer.generate(gitData, isPr)
-            responseService.response(LlmTemplates.ROLE, prompt)
+            responseService.response(LlmTemplates.ROLE, prompt, ConversationMemory.history)
         } catch (e: Exception) {
             logger.error("Error generating ${this::class.simpleName} message - $e")
             exitProcess(1)
