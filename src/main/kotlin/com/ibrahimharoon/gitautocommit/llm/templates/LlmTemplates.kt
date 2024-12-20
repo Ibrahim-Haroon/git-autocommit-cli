@@ -24,8 +24,14 @@ internal class LlmTemplates {
             concise, and well-structured commit messages that accurately reflect the changes made in the code.
             """
 
-        fun commitPrompt(gitDiff: String, previousConversations: String): String =
+        fun commitPrompt(gitDiff: String): String =
             """
+            Given:
+         
+            <git_diff>
+            {{$gitDiff}}
+            </git_diff>
+            
             Analyze the provided git diff and generate a single, unified commit message that captures the essence of
             all changes across multiple files. Focus on common themes, significant changes, and relationships between
             modifications in different files.
@@ -68,35 +74,21 @@ internal class LlmTemplates {
             - Implement token refresh mechanism in AuthMiddleware
             ```
             
-            Input:
-            
-            <git_diff>
-            {{$gitDiff}}
-            </git_diff>
-            
-            <previous_conversations>
-            {{$previousConversations}}
-            </previous_conversations>
-            
             Generate the commit message based on the provided git diff and previous conversations (if any). Ensure the
             output consists solely of the commit message, without any additional text or explanations.
             
             !!!IMPORTANT: NEVER RE-OUTPUT ANY OF THE ABOVE IN THE COMMIT MESSAGE!!!
             """
 
-        fun prSummaryPrompt(gitLog: String, previousConversations: String): String =
+        fun prSummaryPrompt(gitLog: String): String =
             """
-            You will provided the following information:
-                <gitLog>
-                {{$gitLog}}
-                </gitLog>
-              
+            Given:
+            <git_log>
+            {{$gitLog}}
+            </git_log>
+          
             This may be a subsequent retry in which the first generated commit message did not meet the user's 
-            expectations. Carefully analyze the previous conversations (if any) and follow what the user wanted:
-            
-            <previous_conversations>
-            {{$previousConversations}}
-            </previous_conversations>
+            expectations. Carefully analyze the previous conversations (if any) and follow what the user wanted.
             
             Generate a PR summary that follows best practices, providing a clear and comprehensive overview of 
             the changes introduced. This will be pasted directly into PR conversation tab in Github. Use direct names
