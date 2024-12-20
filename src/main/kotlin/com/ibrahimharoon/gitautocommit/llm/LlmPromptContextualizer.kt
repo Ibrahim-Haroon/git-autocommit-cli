@@ -1,6 +1,5 @@
 package com.ibrahimharoon.gitautocommit.llm
 
-import com.ibrahimharoon.gitautocommit.cache.RegenConversationCache
 import com.ibrahimharoon.gitautocommit.llm.templates.LlmTemplates.Companion.commitPrompt
 import com.ibrahimharoon.gitautocommit.llm.templates.LlmTemplates.Companion.prSummaryPrompt
 
@@ -8,16 +7,9 @@ import com.ibrahimharoon.gitautocommit.llm.templates.LlmTemplates.Companion.prSu
  * Object responsible for contextualizing prompts for Language Model (LLM) interactions.
  *
  * This object generates appropriate prompts for LLMs based on the given git data and the type of
- * summary required (commit message or PR summary). It also incorporates conversation history
- * from the RegenConversationCache to provide context for regeneration requests.
+ * summary required (commit message or PR summary).
  */
 object LlmPromptContextualizer {
-
-    /**
-     * Cache for storing conversation history for regeneration requests.
-     */
-    private val conversationCache = RegenConversationCache
-
     /**
      * Generates a contextualized prompt for the LLM based on the provided git data and summary type.
      *
@@ -30,8 +22,8 @@ object LlmPromptContextualizer {
      */
     fun generate(gitData: String, isPr: Boolean): String {
         if (isPr) {
-            return prSummaryPrompt(gitData, conversationCache.toString())
+            return prSummaryPrompt(gitData)
         }
-        return commitPrompt(gitData, conversationCache.toString())
+        return commitPrompt(gitData)
     }
 }
