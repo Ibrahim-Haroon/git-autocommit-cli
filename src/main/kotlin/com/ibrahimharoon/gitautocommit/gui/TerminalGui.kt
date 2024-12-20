@@ -11,6 +11,8 @@ import com.ibrahimharoon.gitautocommit.core.SummaryOptions
 import com.ibrahimharoon.gitautocommit.git.GitChangesSummarizer
 import com.ibrahimharoon.gitautocommit.llm.memory.ConversationMemory
 import com.ibrahimharoon.gitautocommit.llm.model.LlmMessage
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
 /**
  * Handles terminal-based user interactions for reviewing and editing generated messages.
@@ -30,7 +32,8 @@ class TerminalGui(
     initialMessage: String
 ) {
     private val terminal = Terminal()
-    private var message: String = initialMessage
+    private val lock = ReentrantLock()
+    @Volatile private var message: String = initialMessage
 
     /**
      * Initiates the user interaction process.
@@ -41,21 +44,27 @@ class TerminalGui(
      * @return The final message after user interaction, or an empty string if cancelled.
      */
     fun interactWithUser(): String {
-        while (true) {
-            displayMessage()
+        lock.withLock {
+            while (true) {
+                displayMessage()
 
-            val prompt = StringPrompt(
-                prompt = TextColors.cyan(promptMessage),
-                terminal = terminal,
-                default = "",
-                choices = listOf("y", "n", "edit", "regen")
-            )
+                val prompt = StringPrompt(
+                    prompt = TextColors.cyan(promptMessage),
+                    terminal = terminal,
+                    default = "",
+                    choices = listOf("y", "n", "edit", "regen")
+                )
 
-            when (prompt.ask()?.lowercase()?.trim()) {
-                "n" -> return handleCancellation()
-                "edit" -> handleEdit()
-                "regen" -> handleRegen()
-                else -> return handleConfirmation() // by default empty or 'y' means confirmed
+                val result = when (prompt.ask()?.lowercase()?.trim()) {
+                    "n" -> handleCancellation()
+                    "edit" -> { handleEdit(); null }
+                    "regen" -> { handleRegen(); null }
+                    else -> handleConfirmation() // by default empty or 'y' means confirmed
+                }
+
+                if (result != null) {
+                    return result
+                }
             }
         }
     }
@@ -63,7 +72,7 @@ class TerminalGui(
     /**
      * Displays the current message in the terminal.
      */
-    private fun displayMessage() {
+    private fun displayMessage() = lock.withLock {
         terminal.cursor.move {
             up(terminal.info.height)
             startOfLine()
@@ -86,7 +95,7 @@ class TerminalGui(
      *
      * @return The confirmed message.
      */
-    private fun handleConfirmation(): String {
+    private fun handleConfirmation(): String = lock.withLock {
         terminal.println(TextColors.green("Successfully confirmed"))
         return message
     }
@@ -96,7 +105,7 @@ class TerminalGui(
      *
      * @return An empty string to indicate cancellation.
      */
-    private fun handleCancellation(): String {
+    private fun handleCancellation(): String = lock.withLock {
         terminal.println(TextColors.yellow("Operation cancelled"))
         return ""
     }
@@ -104,7 +113,7 @@ class TerminalGui(
     /**
      * Handles the user's request to edit the current message.
      */
-    private fun handleEdit() {
+    private fun handleEdit() = lock.withLock {
         terminal.println(TextStyles.bold(TextColors.yellow("Copied message to clipboard! Paste to edit")))
         val editPrompt = StringPrompt(
             prompt = TextColors.cyan("Edit message"),
@@ -117,7 +126,7 @@ class TerminalGui(
     /**
      * Handles the user's request to regenerate the message.
      */
-    private fun handleRegen() {
+    private fun handleRegen() = lock.withLock {
         terminal.println(TextColors.yellow("Regenerating message..."))
 
         val regenMessage = StringPrompt(
