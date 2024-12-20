@@ -5,6 +5,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock
 import kotlin.concurrent.read
 import kotlin.concurrent.write
 
+
 /**
  * Thread-safe object responsible for managing conversation history between the user and LLM.
  *
