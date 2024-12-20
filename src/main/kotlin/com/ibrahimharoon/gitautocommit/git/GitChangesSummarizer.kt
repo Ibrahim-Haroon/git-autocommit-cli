@@ -9,8 +9,6 @@ import com.ibrahimharoon.gitautocommit.llm.memory.ConversationMemory
 import com.ibrahimharoon.gitautocommit.llm.model.LlmMessage
 import org.slf4j.LoggerFactory
 import java.io.File
-import java.util.concurrent.locks.ReentrantLock
-import kotlin.concurrent.withLock
 import kotlin.system.exitProcess
 
 /**
@@ -21,7 +19,6 @@ import kotlin.system.exitProcess
  * user interface components, and git commands to complete the summarization process.
  */
 object GitChangesSummarizer {
-    private val lock = ReentrantLock()
     private val logger = LoggerFactory.getLogger(this::class.java.simpleName)
 
     /**
@@ -32,7 +29,7 @@ object GitChangesSummarizer {
      *
      * @param options The [SummaryOptions] containing configuration for the summarization process.
      */
-    fun summarizeChanges(options: SummaryOptions) = lock.withLock {
+    fun summarizeChanges(options: SummaryOptions) {
         if (!options.withGui) {
             val message = generateMessage(options)
 
@@ -88,7 +85,7 @@ object GitChangesSummarizer {
      * @param options The [SummaryOptions] containing configuration for the summarization process.
      * @return The generated summary message as a string.
      */
-    fun generateMessage(options: SummaryOptions): String = lock.withLock {
+    fun generateMessage(options: SummaryOptions): String {
         val gitData = if (options.isPr) GitService.getGitLog() else GitService.getGitDiff()
 
         if (gitData.isEmpty()) {
@@ -115,7 +112,7 @@ object GitChangesSummarizer {
      * @param message The PR summary message.
      * @param terminalGui The [TerminalGui] instance for user interaction.
      */
-    private fun handlePrMessage(message: String, terminalGui: TerminalGui) = lock.withLock {
+    private fun handlePrMessage(message: String, terminalGui: TerminalGui) {
         TerminalService.copyToClipboard(message)
         terminalGui.terminal().println("PR summary generated successfully")
         terminalGui.terminal().println(TextColors.yellow("PR summary copied to clipboard!"))
@@ -130,7 +127,7 @@ object GitChangesSummarizer {
      * @param message The commit message.
      * @param terminalGui The [TerminalGui] instance for user interaction.
      */
-    private fun handleCommitMessage(message: String, terminalGui: TerminalGui) = lock.withLock {
+    private fun handleCommitMessage(message: String, terminalGui: TerminalGui) {
         try {
             val processBuilder = ProcessBuilder("git", "commit", "-m", message)
             processBuilder.inheritIO()
