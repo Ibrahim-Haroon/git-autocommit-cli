@@ -12,6 +12,8 @@ import com.github.ajalt.mordant.widgets.progress.speed
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.concurrent.Executors
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 import kotlin.system.exitProcess
 
 /**
@@ -23,6 +25,7 @@ import kotlin.system.exitProcess
  * but rather serves as a "busy" indicator.
  */
 object ProgressBarGui {
+    private val lock = ReentrantLock()
     private val logger: Logger = LoggerFactory.getLogger(this::class.java.simpleName)
 
     /**
@@ -41,33 +44,35 @@ object ProgressBarGui {
         val taskExecutorService = Executors.newSingleThreadExecutor()
 
         try {
-            val terminal = Terminal()
-            val progress = progressBarLayout {
-                marquee(terminal.theme.warning("Generating message"), width = 15)
-                percentage()
-                progressBar()
-                speed("B/s", style = terminal.theme.info)
-            }.animateOnThread(terminal)
-            val progressFuture = progress.execute()
+            lock.withLock {
+                val terminal = Terminal()
+                val progress = progressBarLayout {
+                    marquee(terminal.theme.warning("Generating message"), width = 15)
+                    percentage()
+                    progressBar()
+                    speed("B/s", style = terminal.theme.info)
+                }.animateOnThread(terminal)
+                val progressFuture = progress.execute()
 
-            val taskFuture = taskExecutorService.submit(task)
+                val taskFuture = taskExecutorService.submit(task)
 
-            progress.update { total = TOTAL_TIME }
-            var elapsed = 0L
-            while (!taskFuture.isDone) {
-                if (elapsed >= TIMEOUT) {
-                    progress.advance(TOTAL_TIME - elapsed)
-                    break
+                progress.update { total = TOTAL_TIME }
+                var elapsed = 0L
+                while (!taskFuture.isDone) {
+                    if (elapsed >= TIMEOUT) {
+                        progress.advance(TOTAL_TIME - elapsed)
+                        break
+                    }
+                    progress.advance(100)
+                    Thread.sleep(50)
+                    elapsed += 100
                 }
-                progress.advance(100)
-                Thread.sleep(50)
-                elapsed += 100
+
+                progressFuture.get()
+                val result = taskFuture.get()
+
+                return result
             }
-
-            progressFuture.get()
-            val result = taskFuture.get()
-
-            return result
         } catch (e: Exception) {
             logger.error("Error while generating commit message", e)
             exitProcess(1)

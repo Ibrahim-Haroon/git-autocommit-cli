@@ -2,6 +2,9 @@ package com.ibrahimharoon.gitautocommit.git
 
 import com.ibrahimharoon.gitautocommit.cli.TerminalService
 import java.io.File
+import java.util.concurrent.locks.ReentrantReadWriteLock
+import kotlin.concurrent.read
+import kotlin.concurrent.write
 
 /**
  * Object responsible for interacting with Git and retrieving relevant information.
@@ -10,6 +13,14 @@ import java.io.File
  * git diffs, logs, and other relevant information needed for generating commit messages or PR summaries.
  */
 object GitService {
+    private val lock = ReentrantReadWriteLock()
+    private val excludedFiles: HashSet<String>
+
+    init {
+        lock.write {
+            excludedFiles = getFilesToExclude()
+        }
+    }
 
     /**
      * Retrieves the set of files to be excluded from git operations.
@@ -27,19 +38,18 @@ object GitService {
         }
     }
 
-    private val excludedFiles = getFilesToExclude()
-
     /**
      * Retrieves the name of the current Git branch.
      *
      * @return A string representing the name of the current Git branch.
      */
-    private fun getCurrentBranchName(): String {
+    private fun getCurrentBranchName(): String = lock.read {
         val gitBranchArgs = listOf("rev-parse", "--abbrev-ref", "HEAD")
         val cliCommand = buildList {
             add("git")
             addAll(gitBranchArgs)
         }
+
         return TerminalService.executeCommand(cliCommand)
     }
 
@@ -50,13 +60,14 @@ object GitService {
      *
      * @return A string containing the Git log.
      */
-    fun getGitLog(): String {
+    fun getGitLog(): String = lock.read {
         val currBranch = getCurrentBranchName()
         val gitLogArgs = listOf("log", "main..$currBranch", "--pretty=format:%s")
         val cliCommand = buildList {
             add("git")
             addAll(gitLogArgs)
         }
+
         return TerminalService.executeCommand(cliCommand)
     }
 
@@ -67,7 +78,7 @@ object GitService {
      *
      * @return A string containing the Git diff, or an empty string if no changes are detected.
      */
-    fun getGitDiff(): String {
+    fun getGitDiff(): String = lock.read {
         val gitDiffArgs = listOf("diff", "--cached", "--diff-algorithm=minimal")
         val cliCommand = buildList {
             add("git")
