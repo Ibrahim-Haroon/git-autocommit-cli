@@ -9,8 +9,6 @@ import com.github.ajalt.mordant.widgets.Panel
 import com.ibrahimharoon.gitautocommit.cli.TerminalService
 import com.ibrahimharoon.gitautocommit.core.SummaryOptions
 import com.ibrahimharoon.gitautocommit.git.GitChangesSummarizer
-import com.ibrahimharoon.gitautocommit.llm.memory.ConversationMemory
-import com.ibrahimharoon.gitautocommit.llm.model.LlmMessage
 
 /**
  * Handles terminal-based user interactions for reviewing and editing generated messages.
@@ -120,30 +118,18 @@ class TerminalGui(
     private fun handleRegen() {
         terminal.println(TextColors.yellow("Regenerating message..."))
 
-        val regenMessage = StringPrompt(
-            prompt = TextColors.cyan("Pass additional instructions to LLM (optional)"),
+        val additionalPrompt = StringPrompt(
+            prompt = TextColors.cyan("Pass additional prompt to LLM (optional)"),
             terminal = terminal,
         ).ask()
 
-        if (regenMessage.isNullOrBlank()) {
-            terminal.println(TextStyles.bold(TextColors.yellow("No additional instructions provided. Using default settings.")))
+        if (additionalPrompt.isNullOrBlank()) {
+            terminal.println(TextStyles.bold(TextColors.yellow("No additional prompt provided. Using default settings.")))
         }
 
-        ConversationMemory.add(
-            LlmMessage(
-                role = LlmMessage.Role.User,
-                content = regenMessage ?: "No additional instructions, just don't like generated message"
-            )
-        )
-        // The regen message will be in the conversation memory, so it doesn't need to be passed around
         message = GitChangesSummarizer.generateMessage(
-            options.copy(withGui = false)
-        )
-        ConversationMemory.add(
-            LlmMessage(
-                role = LlmMessage.Role.Assistant,
-                content = message
-            )
+            options,
+            withGui = false,
         )
 
         if (message.isEmpty()) {
