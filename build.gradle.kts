@@ -15,7 +15,7 @@ application {
 }
 
 group = "com.ibrahimharoon.gitautocommit"
-version = "1.0.9" // This will be updated by the CI workflow
+version = "1.0.10" // This will be updated by the CI workflow
 
 java {
 }
